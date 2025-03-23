@@ -6,7 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../../firebase.config";
-import axios from "axios";
+import { loginRequest } from "../api/auth"
 
 const useAuthStore = create((set) => {
   const observerAuthState = () => {
@@ -29,11 +29,13 @@ const useAuthStore = create((set) => {
         const user = userCredential.user;
         const token = await user.getIdToken();
         const name = user.displayName;
-
-        await axios.post(import.meta.env.VITE_API_BACKEND_LOGIN, {
+        
+        const userLoge = {
           token,
           name,
-        });
+        };
+        
+        loginRequest(userLoge);
         
         console.log("Se verifico el token usando el backend");
         return userCredential; 
