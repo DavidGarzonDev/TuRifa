@@ -6,12 +6,35 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../../firebase.config";
-import { loginRequest } from "../api/auth"
+import { loginRequest } from "../api/auth";
 
-const useAuthStore = create((set) => {
+const useAuthStore = create((set, get) => {
+  const verifyauthWhitBackend = async (user) => {
+    try {
+      const token = await user.getIdToken();
+      const useLogedData = {
+        token,
+      };
+
+      const res = await loginRequest(useLogedData);
+      set({ useLooged: user, isLoading: false, isSessionValid: true });
+      return res.data;
+    } catch (error) {
+      set({ useLooged: null, isLoading: false, isSessionValid: false });
+    }
+  };
   const observerAuthState = () => {
-    onAuthStateChanged(auth, (user) => {
-      user ? set({ useLooged: user }) : set({ useLooged: null });
+    onAuthStateChanged(auth, async (user) => {
+      set({ isLoading: true });
+      if (user) {
+        if (get().isSessionValid) {
+          set({ useLooged: user, isLoading: false });
+        } else {
+          await verifyauthWhitBackend(user);
+        }
+      } else {
+        set({ useLooged: null, isLoading: false, isSessionValid: false });
+      }
     });
   };
 
@@ -22,37 +45,23 @@ const useAuthStore = create((set) => {
 
     loginGoogleWithPopup: async () => {
       try {
-        const userCredential = await signInWithPopup(
-          auth,
-          new GoogleAuthProvider()
-        );
-        const user = userCredential.user;
+        const userLogin = await signInWithPopup(auth, new GoogleAuthProvider());
+        const user = userLogin.user;
         const token = await user.getIdToken();
-        const name = user.displayName;
-        
-        const userLoge = {
+
+        const useLogedData = {
           token,
-          name,
         };
-        
-        loginRequest(userLoge);
-        
-        console.log("Se verifico el token usando el backend");
-        return userCredential; 
+
+        const res = await loginRequest(useLogedData);
+        set({ useLooged: user, isSessionValid: true });
+        return res.data;
       } catch (error) {
-        if (error.response) {
-          console.error("Error del backend:", error.response.data);
-          console.error("Status del error:", error.response.status);
-          throw new Error("backend-error");
-        } else {
-          console.error("An unexpected error occurred during login:", error);
-          throw new Error("unexpected-error"); 
-        }
+        set({ useLooged: null, isSessionValid: false });
+        throw error.response.data.error;
       }
     },
 
-
-    
     logout: async () => {
       return await signOut(auth)
         .then(() => set({ useLooged: null }))

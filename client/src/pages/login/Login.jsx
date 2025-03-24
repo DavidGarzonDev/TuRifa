@@ -1,21 +1,22 @@
 import useAuthStore from "../../store/use-auth-store";
 import { useNavigate } from "react-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const Login = () => {
     const { loginGoogleWithPopup } = useAuthStore();
     const navigate = useNavigate();
+    const [ error, setError ] = useState(null);
   
     const haldleLogin = useCallback(async () => {
+      setError(null)
       try {
-        await loginGoogleWithPopup();
-        navigate("/home"); 
+        const res = await loginGoogleWithPopup();
+        console.log(res);
+        navigate("/"); 
       } catch (error) {
-        if (error.message === "backend-error") {
-          navigate("/login"); 
-        } else if (error.message === "unexpected-error") {
-          navigate("/login"); 
-        } 
+        console.log(error)
+        setError(error);
+        navigate("/login");
       }
     }, [loginGoogleWithPopup, navigate]);
   
@@ -29,6 +30,8 @@ const Login = () => {
         >
           Login con google
         </button>
+        <p>{error}</p>
+
       </>
     );
 }

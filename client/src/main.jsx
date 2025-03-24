@@ -8,14 +8,14 @@ import App from "./App";
 import NotFound from "./pages/no-found/NotFound";
 import Register from "./pages/register/Register.jsx";
 import Login from "./pages/login/Login.jsx";
-import { AuthProvider } from "./context/AuthContext";
+
 
 //Import para las rutas
 import { BrowserRouter, Routes, Route } from "react-router";
 import Layout from "./layout/Layout.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
+
     <BrowserRouter>
       <Layout>
         <Routes>
@@ -27,5 +27,5 @@ createRoot(document.getElementById("root")).render(
         </Routes>
       </Layout>
     </BrowserRouter>
-  </AuthProvider>
+
 );
