@@ -1,10 +1,15 @@
-import React from 'react'
 
-const Layout = () => {
+import Footer from "./footer/Footer"
+import Header from "./header/Header"
+
+const Layout = ({children}) => {
   return (
-    <div>
-      
-    </div>
+  <div className="layout">
+    <Header />
+    <main className="layout-content">{children}</main>
+    <Footer />
+
+  </div> 
   )
 }
 

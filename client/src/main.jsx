@@ -12,17 +12,20 @@ import { AuthProvider } from "./context/AuthContext";
 
 //Import para las rutas
 import { BrowserRouter, Routes, Route } from "react-router";
+import Layout from "./layout/Layout.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/perfil" element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/perfil" element={<Profile />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   </AuthProvider>
 );

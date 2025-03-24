@@ -9,7 +9,7 @@ const Login = () => {
     const haldleLogin = useCallback(async () => {
       try {
         await loginGoogleWithPopup();
-        navigate("/perfil"); 
+        navigate("/home"); 
       } catch (error) {
         if (error.message === "backend-error") {
           navigate("/login"); 
