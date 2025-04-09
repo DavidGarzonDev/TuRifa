@@ -5,8 +5,8 @@ import {
   GoogleAuthProvider,
   signOut,
 } from "firebase/auth";
-import { auth } from "../../firebase.config";
-import { loginRequest } from "../api/auth";
+import { auth } from "../../../firebase.config";
+import { loginRequest } from "../../api/auth";
 
 const useAuthStore = create((set, get) => {
   
