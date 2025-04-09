@@ -2,8 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 //Rutas
-import Home from "./pages/home/home.jsx";
-import App from "./App";
+import Home from "./pages/home/Home.jsx";
 import NotFound from "./pages/no-found/NotFound";
 import Login from "./pages/login/Login.jsx";
 
