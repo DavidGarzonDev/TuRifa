@@ -1,6 +1,6 @@
 
 import React from 'react';
-import useAuthStore from "../../store/use-auth-store";
+import useAuthStore from "../../store/auth-store/use-auth-store";
 
 const Home = () => {
 

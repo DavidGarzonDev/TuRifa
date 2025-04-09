@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import useAuthStore from "../../store/use-auth-store";
+import useAuthStore from "../../store/auth-store/use-auth-store";
 import { useNavigate } from "react-router";
 import { useCallback } from "react";
 
