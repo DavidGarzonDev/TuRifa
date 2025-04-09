@@ -9,6 +9,7 @@ import { auth } from "../../firebase.config";
 import { loginRequest } from "../api/auth";
 
 const useAuthStore = create((set, get) => {
+  
   const verifyauthWhitBackend = async (user) => {
     try {
       const token = await user.getIdToken();
