@@ -1,29 +1,10 @@
-import useAuthStore from "../../store/use-auth-store";
-import { useNavigate } from "react-router";
-import { use, useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+
+import React, { useState } from "react";
 import LoginComponent from "../../components/LoginComponent";
 import RegisterComponent from "../../components/RegisterComponent";
+import LoginWhitGoogleComponent from "../../components/LoginWhitGoogleComponent";
 
 const Login = () => {
-  const { loginGoogleWithPopup } = useAuthStore();
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
-
-  
-
-  const haldleLogin = useCallback(async () => {
-    setError(null);
-    try {
-      const res = await loginGoogleWithPopup();
-      console.log(res);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-      setError(error);
-      navigate("/login");
-    }
-  }, [loginGoogleWithPopup, navigate]);
 
   const [registerVal, setRegisterVal] = useState(false);
 
@@ -35,13 +16,7 @@ const Login = () => {
         {!registerVal ? <button onClick={() => setRegisterVal(true)}>Registrarse</button> : <button onClick={()=> setRegisterVal(false)} >Logearse</button>}
       </div>
       <br />
-      <button
-        type="button"
-        title="Iniciar sesión con Google"
-        onClick={haldleLogin}>
-        Login con google
-      </button>
-      <p>{error}</p>
+      <LoginWhitGoogleComponent/>
     </>
   );
 };

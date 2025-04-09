@@ -18,8 +18,6 @@ const Header = () => {
   }, [logout, navigate]);
 
 
-  console.log(useLooged);
-
   
   return (
     <header>
