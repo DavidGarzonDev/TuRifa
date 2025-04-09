@@ -10,7 +10,7 @@ import authRoutes from './routes/auth.routes.js'
 const app = express()
 
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: '*',
 }))
 
 app.use(morgan('dev'));
