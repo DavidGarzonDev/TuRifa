@@ -21,6 +21,7 @@ const useAuthStore = create((set, get) => {
       set({ useLooged: user, isLoading: false, isSessionValid: true });
       return res.data;
     } catch (error) {
+      console.log(error);
       set({ useLooged: null, isLoading: false, isSessionValid: false });
     }
   };
