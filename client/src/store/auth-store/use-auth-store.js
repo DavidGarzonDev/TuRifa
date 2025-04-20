@@ -21,6 +21,7 @@ const useAuthStore = create((set, get) => {
       set({ useLooged: user, isLoading: false, isSessionValid: true });
       return res.data;
     } catch (error) {
+      console.log(error);
       set({ useLooged: null, isLoading: false, isSessionValid: false });
     }
   };
@@ -59,7 +60,12 @@ const useAuthStore = create((set, get) => {
         return res.data;
       } catch (error) {
         set({ useLooged: null, isSessionValid: false });
-        throw error.response.data.error;
+        if(error.response && error.response.data && error.response.data.error) {
+          throw error.response.data.error;
+        } else {
+          console.error("Error de autenticación:", error.message);
+          throw error;
+        }
       }
     },
 
