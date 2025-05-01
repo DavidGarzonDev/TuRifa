@@ -1,5 +1,6 @@
-import User from "../models/user.model.js";
+import { createUser, getUserByUid } from "../models/user.model.js";
 import admin from "../firebase.js";
+import { supabase } from "../db.js";
 
 export const register = async (req, res) => {
   const { token } = req.body;
@@ -10,25 +11,26 @@ export const register = async (req, res) => {
   }
 
   try {
-    const decodeToken = await admin.auth().verifyIdToken(token);
-    const uid = decodeToken.uid;
-    const email = decodeToken.email;
-    const name = req.body.name;
+    const decoded = await admin.auth().verifyIdToken(token);
+    const { uid, email, name } = decoded;
 
-    const userFound = await User.findOne({ uid });
-
+    let userFound = null;
+    try {
+      const { data } = await getUserByUid(uid);
+      userFound = data;
+    } catch (error) {
+      if (err.status !== 406) throw err;
+    }
     if (userFound) {
-      console.log("El usuario ya existe");
       return res.status(400).json({ error: "El usuario ya existe" });
     }
 
-    const newUser = new User({
+    await createUser({
       uid,
       name,
       email,
     });
 
-    await newUser.save();
     res.status(200).send("Usuario guardado exitosamente");
   } catch (error) {
     res.status(400).send("Error al guardar el usuario: " + error.message);
@@ -44,18 +46,85 @@ export const login = async (req, res) => {
   }
 
   try {
-    const decodeToken = await admin.auth().verifyIdToken(token);
-    const uid = decodeToken.uid;
+    const decoded = await admin.auth().verifyIdToken(token);
+    const { uid, email, name } = decoded;
 
-    const userFound = await User.findOne({ uid });
+    let userInDb = null;
+    let findError = null;
 
-    if (!userFound) {
-      return res.status(400).json({ error: "Usuario no encontrado" });
+    try {
+ 
+      const { data, error } = await supabase
+        .from("users")
+        .select("*") 
+        .eq("uid", uid)
+        .maybeSingle(); 
+
+      if (error) {
+      
+        throw error;
+      }
+      userInDb = data;
+    } catch (err) {
+      console.error("Error al buscar el usuario durante login:", err);
+
+      findError = err;
     }
 
-    return res.status(200).send("Usuario logeado con exito");
+    if (findError) {
+      return res
+        .status(500)
+        .json({ error: "Error interno al buscar el usuario." });
+    }
+
+    if (!userInDb) {
+      console.log(`Usuario con uid ${uid} no encontrado, creando...`);
+      try {
+        const { data: newUser, error: createError } = await createUser({
+          uid,
+          name,
+          email,
+        });
+
+        if (createError) {
+          console.error("Error al crear usuario durante login:", createError);
+          if (createError.code === "23505") {
+            return res.status(409).json({
+              error:
+                "Conflicto al crear usuario (posiblemente email duplicado).",
+            });
+          }
+          return res.status(500).json({
+            error: "Error al guardar el nuevo usuario: " + createError.message,
+          });
+        }
+
+        userInDb = newUser?.[0];
+        console.log("Usuario creado exitosamente durante login:", userInDb);
+      } catch (creationErr) {
+        console.error("Error inesperado en bloque de creación:", creationErr);
+        return res
+          .status(500)
+          .json({ error: "Error interno inesperado al crear usuario." });
+      }
+    } else {
+      console.log(`Usuario encontrado: ${userInDb.email}`);
+    }
+
+    if (!userInDb) {
+      console.error("Error crítico: userInDb es null después de buscar/crear.");
+      return res.status(500).json({
+        error: "Error interno: no se pudo obtener la información del usuario.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Usuario logeado con éxito",
+      userId: userInDb.id, // El ID de tu tabla de Supabase
+      email: userInDb.email,
+    });
 
   } catch (error) {
-    return res.status(400).send("Error al guardar el usuario: " + error.message);
+    return res.status(400).send("Error en login: " + error.message);
   }
 };
