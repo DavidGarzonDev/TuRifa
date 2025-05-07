@@ -9,13 +9,14 @@ import Login from "./pages/login/Login.jsx";
 //Import para las rutas
 import { BrowserRouter, Routes, Route } from "react-router";
 import Layout from "./layout/Layout.jsx";
+import Inicio from "./pages/inicio/inicio.jsx";
 
 createRoot(document.getElementById("root")).render(
 
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Inicio />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
