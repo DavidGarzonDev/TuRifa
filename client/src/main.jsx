@@ -9,7 +9,7 @@ import Login from "./pages/login/Login.jsx";
 //Import para las rutas
 import { BrowserRouter, Routes, Route } from "react-router";
 import Layout from "./layout/Layout.jsx";
-import Inicio from "./pages/inicio/inicio.jsx";
+import Inicio from "./pages/inicio/Inicio.jsx";
 
 createRoot(document.getElementById("root")).render(
 
