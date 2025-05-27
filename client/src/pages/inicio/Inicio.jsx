@@ -2,7 +2,7 @@ import React from "react";
 import { FaTicketAlt, FaGift, FaCoins } from "react-icons/fa";
 import CardRifa from "./components/CardRifa";
 
-const inicio = () => {
+const Inicio = () => {
   return (
     <div className="font-sans bg-gray-100 min-h-screen">
       {/* Hero Section */}
