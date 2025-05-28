@@ -49,7 +49,33 @@ const Header = () => {
             >
               Iniciar Sesión
             </NavLink>
-          ) : (
+          ) :
+          (
+            <>
+              <NavLink
+                to="/crear/rifa"
+                className={({ isActive }) =>
+                  `hover:text-blue-300 transition ${
+                    isActive ? "underline text-blue-200" : ""
+                  }`
+                }
+              >
+                Crear Rifa
+              </NavLink>
+              <NavLink
+                to="/mis/rifas"
+                className={({ isActive }) =>
+                  `hover:text-blue-300 transition ${
+                    isActive ? "underline text-blue-200" : ""
+                  }`
+                }
+              >
+                Mis Rifas
+              </NavLink>
+            </>
+          )}
+          {useLooged &&
+            (
             <button
               type="button"
               title="Cerrar sesión"
@@ -58,7 +84,8 @@ const Header = () => {
             >
               Cerrar Sesión
             </button>
-          )}
+            )
+          }
         </div>
       </nav>
     </header>
