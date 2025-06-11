@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import useAuthStore from '../../store/auth-store/use-auth-store';
 import { useNavigate } from 'react-router-dom';
 import { FaTicketAlt, FaGift, FaCoins, FaCalendarAlt, FaClock, FaInfoCircle } from 'react-icons/fa';
+import { createRifa } from '../../api/rifa.js'
 
 const MakeRifa = () => {
   const [rifaData, setRifaData] = useState({
@@ -13,7 +14,7 @@ const MakeRifa = () => {
     startDate: '',
     endDate: ''
   });
-  const [imagePreview, setImagePreview] = useState(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
@@ -27,28 +28,33 @@ const MakeRifa = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
+    const token = useAuthStore.getState().useLooged?.accessToken;
+    const uid = useAuthStore.getState().useLooged?.uid;
+
+    const data = {
+      token,
+      rifa: {
+        ...rifaData,
+        userId: uid,
+      }
+    }
+
     try {
-      console.log('Datos de la rifa a enviar:', rifaData);
       
-      setTimeout(() => {
-        alert('¡Rifa creada con éxito!');
-        navigate('/mis-rifas');
-      }, 1500);
+      const response = await createRifa(data);
+      if (response.error) {
+        console.error('Error al crear la rifa:', response.error);
+        alert('Ocurrió un error al crear la rifa. Intenta nuevamente.');
+      }
+      else {
+        console.log('Rifa creada exitosamente:', response.rifa);
+        alert('Rifa creada exitosamente!');
+        navigate('/mis/rifas');
+      }
       
     } catch (error) {
       console.error('Error al crear la rifa:', error);
@@ -133,28 +139,7 @@ const MakeRifa = () => {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="image" className="block text-gray-700 font-medium mb-2">
-                  Imagen del Premio
-                </label>
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {imagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={imagePreview}
-                      alt="Vista previa"
-                      className="w-40 h-40 object-cover rounded-md"
-                    />
-                  </div>
-                )}
-              </div>
+              
             </div>
 
             {/* Columna 2 */}
