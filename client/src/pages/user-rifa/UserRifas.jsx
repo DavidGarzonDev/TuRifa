@@ -2,29 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaTicketAlt, FaEdit, FaTrashAlt, FaEye, FaPlus, FaUsers, FaCalendarAlt, FaCoins, FaFilter, FaGift } from 'react-icons/fa';
 import useAuthStore from '../../store/auth-store/use-auth-store';
+import { getRifas } from '../../api/rifa.js';
 
 const UserRifas = () => {
   const { useLooged } = useAuthStore();
-  const [rifas, setRifas] = useState([]);
+  const [rifasData, setRifas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
 
 
   useEffect(() => {
-   
-    setTimeout(() => {
-      setRifas;
-      setIsLoading(false);
-    }, 800);
-  }, []);
+    if (!useLooged) return;
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const token = useAuthStore.getState().useLooged?.accessToken;
+        const { data } = await getRifas(token);
+        setRifas(data.rifas);
+      } catch (err) {
+        console.error('Error cargando rifas:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, [useLooged]);
 
   const handleFilterChange = (e) => {
     setFilterStatus(e.target.value);
   };
 
   const filteredRifas = filterStatus === 'all' 
-    ? rifas 
-    : rifas.filter(rifa => rifa.status === filterStatus);
+    ? rifasData 
+    : rifasData.filter(rifa => rifa.status === filterStatus);
 
   if (!useLooged) {
     return (
@@ -67,7 +77,6 @@ const UserRifas = () => {
                   <option value="all">Todas las rifas</option>
                   <option value="active">Activas</option>
                   <option value="completed">Completadas</option>
-                  <option value="draft">Borradores</option>
                 </select>
                 <FaFilter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
@@ -80,7 +89,7 @@ const UserRifas = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total Rifas</p>
-                  <p className="font-bold text-lg">{rifas.length}</p>
+                  <p className="font-bold text-lg">{rifasData.length}</p>
                 </div>
               </div>
               
@@ -90,7 +99,7 @@ const UserRifas = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Participantes</p>
-                  <p className="font-bold text-lg">{rifas.reduce((acc, rifa) => acc + rifa.soldTickets, 0)}</p>
+                  <p className="font-bold text-lg">{rifasData.reduce((acc, rifa) => acc + rifa.soldTickets, 0)}</p>
                 </div>
               </div>
             </div>
