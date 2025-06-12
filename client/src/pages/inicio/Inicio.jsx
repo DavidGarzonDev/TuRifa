@@ -1,13 +1,44 @@
-import React from "react";
-import { FaTicketAlt, FaGift, FaCoins } from "react-icons/fa";
+
+import { FaTicketAlt, FaGift, FaCoins, FaDollarSign, FaTrophy } from "react-icons/fa";
 import CardRifa from "./components/CardRifa";
+import { useState, useEffect } from "react";
+import { getAllRifas } from "../../api/rifa";
 
 const Inicio = () => {
+  const [rifas, setRifas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    const fetchRifas = async () => {
+      try {
+        setLoading(true);
+        const response = await getAllRifas();
+        setRifas(response.data.rifas || []);
+      } catch (err) {
+        console.error("Error al obtener rifas:", err);
+        setError("No se pudieron cargar las rifas. Intenta de nuevo más tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRifas();
+  }, []);
+  
+  // Array de iconos para variar entre las rifas
+  const icons = [
+    <FaCoins className="text-yellow-400 text-4xl mb-2 mx-auto" />,
+    <FaTrophy className="text-blue-400 text-4xl mb-2 mx-auto" />,
+    <FaGift className="text-purple-400 text-4xl mb-2 mx-auto" />,
+    <FaDollarSign className="text-green-500 text-4xl mb-2 mx-auto" />
+  ];
+  
   return (
     <div className="font-sans bg-gray-100 min-h-screen px-4 md:px-0">
       
-      <section className="bg-radial from-blue-600 from-40% to-blue-800 text-white shadow-lg mb-10 flex flex-col md:flex-row items-stretch min-h-[260px]">
-        <div className="container mx-auto flex flex-col md:flex-row items-center px-4 md:px-0">
+      <section className="bg-radial from-blue-600 from-40% to-blue-800 text-white shadow-lg mb-10 flex flex-col md:flex-row items-stretch min-h-[200px] overflow-hidden relative">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-center px-4 md:px-0 h-full" style={{ width: "1000px" }}>
           <div className="w-full md:w-1/2 flex flex-col justify-center px-4 md:px-8 py-8">
             <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-4 text-center md:text-left">
               ¡Gana increibles
@@ -19,12 +50,11 @@ const Inicio = () => {
             <p className="mt-2 text-base md:text-lg text-blue-100 font-normal text-center md:text-left">
               Crea o participa en rifas de manera <br /> segura, rápida y
               transparente.
-            </p>
-          </div>
-          
-          <div className="relative w-full md:w-1/2 flex items-center justify-center my-8 md:my-0">
+            </p>        
+            </div>            
+            <div className="w-full md:w-1/2 flex items-center justify-center px-4 md:px-8 my-8 md:my-0 h-full">            
             <img
-              className="max-w-full h-auto object-contain"
+              className="absolute h-auto w-auto object-contain mx-auto"
               src="/image/gift.png"
               alt="Premio de rifa"
             />
@@ -63,25 +93,37 @@ const Inicio = () => {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Rifas Section */}
-      <section className="max-w-4xl mx-auto mb-10 px-4 md:px-0">
-        <h3 className="font-bold text-xl mb-5 text-gray-900 text-center">
-          Rifas
+      </section>      {/* Rifas Section */}
+      <section className="max-w-5xl mx-auto mb-10 px-4 md:px-0">
+        <h3 className="font-bold text-2xl mb-5 text-gray-900 text-center">
+          Rifas Disponibles
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <CardRifa
-            premio="Premio en efectivo"
-            img="image/gift.png"
-            icon={<FaCoins className="text-yellow-400 text-4xl mb-2 mx-auto" />}
-          />
-          <CardRifa
-            premio="Premio en efectivo"
-            img="image/gift.png"
-            icon={<FaCoins className="text-yellow-400 text-4xl mb-2 mx-auto" />}
-          />
-        </div>
+        
+        {loading ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4 text-center">
+            {error}
+          </div>
+        ) : rifas.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            <FaTicketAlt className="text-4xl mx-auto mb-3 text-blue-400" />
+            <p>No hay rifas disponibles en este momento.</p>
+            <p className="mt-2">¡Vuelve pronto para ver nuevas rifas!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rifas.map((rifa, index) => (
+              <CardRifa 
+                key={rifa.id || index}
+                rifa={rifa} 
+                icon={icons[index % icons.length]} 
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Footer-like info */}

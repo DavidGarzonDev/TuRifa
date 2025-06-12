@@ -55,3 +55,22 @@ export const getRifas = async (req, res) => {
         
     }
 }
+
+
+export const getAllRifas = async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('rifas')
+            .select('*')
+            .order('start_date', { ascending: false });
+
+        if (error) {
+            return res.status(500).json({ error: "Error al obtener las rifas" });
+        }
+
+        res.status(200).json({ rifas: data });
+    } catch (error) {
+        console.error("Error al obtener todas las rifas:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
