@@ -12,6 +12,7 @@ import Layout from "./layout/Layout.jsx";
 import Inicio from "./pages/inicio/Inicio.jsx";
 import MakeRifa from "./pages/make-rifa/MakeRifa.jsx";
 import UserRifas from "./pages/user-rifa/UserRifas.jsx";
+import BuyTicket from "./pages/buy-ticket/BuyTicket.jsx";
 
 createRoot(document.getElementById("root")).render(
 
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/login" element={<Login />} />
           <Route path="/crear/rifa" element={<MakeRifa />} />
           <Route path="/mis/rifas" element={<UserRifas />} />
+          <Route path='/comprar/rifa/:rifaId' element={<BuyTicket />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
