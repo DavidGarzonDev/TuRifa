@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import {supabase} from '../db.js';
 import  stripe from 'stripe';
 import { getRifa } from '../models/rifa.model.js';
 

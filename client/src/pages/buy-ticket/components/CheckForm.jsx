@@ -1,11 +1,62 @@
 import { useState } from 'react'
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { decrementRifaTicket, getRifaById, updatePartialRifa } from '../../../api/rifa'
+import axios from 'axios'
+import useAuthStore from '../../../store/auth-store/use-auth-store'
+import { createTicket } from '../../../api/ticket'
 
-const CheckoutForm = ({ setShowPaymentForm, ticketPrice }) => {
+async function UpdateRifa(rifaid, amount) {
+    try {
+     const response = await decrementRifaTicket(rifaid, amount);
+     if (response.status === 200) {
+        console.log("Boleto decrementado con éxito");
+        return { success: true, data: response.data };
+     }
+     return { success: false, error: "Error desconocido" };
+    } catch (error) {
+        console.error("Error al decrementar el boleto:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function CreateTicket(rifaId, userId, price, methodPago, idPago = null) {
+    try {
+        const buyDate = new Date().toISOString();
+        
+        const expireDate = new Date();
+        expireDate.setFullYear(expireDate.getFullYear() + 1);
+        
+        const ticketData = {
+            rifaId,
+            userId,
+            buyDate,
+            expireDate: expireDate.toISOString(),
+            status: 'active',
+            idPago: idPago || 'stripe-' + Date.now(),
+            price: price,
+            methodPago: methodPago
+        };
+        
+        const response = await createTicket(ticketData);
+        
+        if (response.status === 201 || response.status === 200) {
+            return { success: true, data: response.data };
+        } else {
+            console.error("Error al crear el ticket:", response);
+            return { success: false, error: "Error al crear el ticket" };
+        }
+    } catch (error) {
+        console.error("Error en la creación del ticket:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+const CheckoutForm = ({ setShowPaymentForm, ticketPrice, rifaId }) => {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState('')
+  const { useLooged } = useAuthStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,7 +81,34 @@ const CheckoutForm = ({ setShowPaymentForm, ticketPrice }) => {
         setPaymentStatus(`Error: ${result.error.message}`)
       } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
         setPaymentStatus('¡Pago completado con éxito! Tu boleto ha sido registrado.')
-        // call api get
+        try {
+            
+            const amount = 1; 
+            const updateResult = await UpdateRifa(rifaId, amount);
+            
+            if (!updateResult.success) {
+                setPaymentStatus(`Pago exitoso, pero hubo un problema al actualizar el inventario: ${updateResult.error}`);
+                return;
+            }
+
+            if (useLooged && useLooged.uid) {
+                const ticketResult = await CreateTicket(
+                    rifaId,
+                    useLooged.uid,
+                    ticketPrice,
+                    'stripe',
+                    result.paymentIntent.id
+                );
+                
+                if (!ticketResult.success) {
+                    setPaymentStatus(`Pago exitoso, inventario actualizado, pero hubo un problema al registrar el boleto: ${ticketResult.error}`);
+                }
+            } else {
+                setPaymentStatus('Pago exitoso, pero no se pudo registrar el boleto: usuario no autenticado');
+            }
+        } catch (error) {
+            setPaymentStatus(`Error al finalizar el proceso: ${error.message}`)
+        }
       }
     } catch (error) {
       setPaymentStatus(`Error inesperado: ${error.message}`)
