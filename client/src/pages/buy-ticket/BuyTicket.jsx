@@ -25,7 +25,7 @@ const BuyTicket = () => {
     
     try {
       
-      const totalPrice = rifaDetails.ticketPrice * ticketQuantity
+      const totalPrice = rifaDetails.ticket_price * ticketQuantity
       const secret = await paymentIntent(totalPrice, rifaId)
 
       setClientSecret(secret)
@@ -48,7 +48,6 @@ const BuyTicket = () => {
         if (dataRifa.error) {
           throw new Error(dataRifa.error)
         }
-        console.log('Detalles de la rifa:', dataRifa.data.rifa)
         setRifaDetails(dataRifa.data.rifa)
 
       } catch (error) {
@@ -71,6 +70,7 @@ const BuyTicket = () => {
             <CheckoutForm 
               setShowPaymentForm={setShowPaymentForm} 
               ticketPrice={grandTotal} 
+              rifaId={rifaId}
             />
           </Elements>
         ) : (
@@ -113,7 +113,7 @@ const BuyTicket = () => {
                     </div>
                     <div className="bg-purple-50 p-4 rounded-xl">
                       <p className="text-sm text-purple-600 font-medium">Organizador</p>
-                      <p className="text-xl font-bold text-purple-800">{rifaDetails?.userID}</p>
+                      <p className="text-xl font-bold text-purple-800">{rifaDetails?.organizer}</p>
                     </div>
                   </div>
                 </div>

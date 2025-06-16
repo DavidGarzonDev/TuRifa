@@ -1,4 +1,4 @@
-import { createRifa, getRifasUser, getRifa} from "../models/rifa.model.js";
+import { createRifa, getRifasUser, getRifa, updateRifa, decrementRifaTickets} from "../models/rifa.model.js";
 import admin from "../firebase.js";
 import { supabase } from "../db.js";
 
@@ -12,10 +12,11 @@ export const createRifas = async (req, res) => {
         }
 
         const decoded = await admin.auth().verifyIdToken(token);
-        const { uid } = decoded;
+        const { uid, name } = decoded;
 
         const rifaData = req.body.rifa;
         rifaData.userId = uid;
+        rifaData.organizer = name;
 
         const { rifa, error } = await createRifa(rifaData);
         if (error) {
@@ -90,4 +91,54 @@ export const getRifaById = async (req, res ) =>{
         console.error("Error al obtener la rifa por ID:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
+}
+
+
+export const updatePartialRifa = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const fieldsToUpdate = req.body;
+
+
+        const rifa = await getRifaById(id)
+        if (!rifa || !rifa.data) {
+            return res.status(404).json({ error: "Rifa no encontrada" });
+        }
+
+        console.log("Campos a actualizar:", fieldsToUpdate);
+
+        await updateRifa(id, fieldsToUpdate);
+        
+        res.status(200).json({ message: "Rifa actualizada correctamente" });
+
+    } catch (error) {
+        console.error("Error al actualizar la rifa:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+export const decrementRifaTicket = async (req, res) => {
+    const { rifaId, amount } = req.body;
+    try {
+        if (!rifaId || !amount) {
+            return res.status(400).json({ error: "rifaId y amount son requeridos" });
+        }
+
+        const rifa = await getRifa(rifaId);
+        if (!rifa || !rifa.data) {
+            return res.status(404).json({ error: "Rifa no encontrada" });
+        }
+
+        const { data, error} = await decrementRifaTickets(rifaId, amount);
+        if (error) {
+            console.error("Error al decrementar los tickets de la rifa:", error);
+            return res.status(500).json({ error: "Error al decrementar los tickets de la rifa" });
+        }
+        res.status(200).json({ message: "Tickets de la rifa decrementar correctamente", data });
+
+    } catch (error) {
+        console.error("Error al decrementar los tickets de la rifa:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+
 }

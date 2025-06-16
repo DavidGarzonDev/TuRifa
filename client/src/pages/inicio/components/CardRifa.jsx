@@ -82,18 +82,27 @@ const CardRifa = ({ rifa, icon }) => {
         
         {/* Button section */}
         <div className="px-6 pb-6">
-          <button 
-
+          { useLooged.displayName === rifa.organizer ? ( 
+            <button 
+              disabled
+              className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
+              <span>Esta rifa es tuya, no puedes participar!</span>
+            </button>
+          ) : (
+            <>
+            <button 
             onClick={!useLooged ? () => navigate(`/login`) : () => navigate(`/comprar/rifa/${rifa.id}`)} 
             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center"
           >
             <span>Participar ahora</span>
-            <FaArrowRight className="ml-2" />
+            <FaArrowRight className="ml-2"/>
           </button>
           
           <p className="text-xs text-gray-500 text-center mt-3">
             ¡No esperes más, los boletos se agotan rápido!
-          </p>
+          </p> 
+            </>
+          )}
         </div>
       </div>
     </div>
