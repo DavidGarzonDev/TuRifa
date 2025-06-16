@@ -51,7 +51,6 @@ const MakeRifa = () => {
         alert('Ocurrió un error al crear la rifa. Intenta nuevamente.');
       }
       else {
-        console.log('Rifa creada exitosamente:', response.rifa);
         alert('Rifa creada exitosamente!');
         navigate('/mis/rifas');
       }

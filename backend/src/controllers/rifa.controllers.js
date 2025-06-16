@@ -1,4 +1,4 @@
-import { createRifa, getRifasUser} from "../models/rifa.model.js";
+import { createRifa, getRifasUser, getRifa} from "../models/rifa.model.js";
 import admin from "../firebase.js";
 import { supabase } from "../db.js";
 
@@ -32,7 +32,7 @@ export const createRifas = async (req, res) => {
 };
 
 
-export const getRifas = async (req, res) => {
+export const getRifasUsers = async (req, res) => {
     try {
         const { token } = req.body;
         if (!token) {
@@ -71,6 +71,23 @@ export const getAllRifas = async (req, res) => {
         res.status(200).json({ rifas: data });
     } catch (error) {
         console.error("Error al obtener todas las rifas:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+
+export const getRifaById = async (req, res ) =>{
+    try {
+        const { rifaId } = req.query;
+        const rifa = await getRifa(rifaId);
+        if (!rifa || !rifa.data) {
+            return res.status(404).json({ error: "Rifa no encontrada" });
+        }
+        
+        res.status(200).json({ rifa: rifa.data });
+        
+    } catch (error) {
+        console.error("Error al obtener la rifa por ID:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 }

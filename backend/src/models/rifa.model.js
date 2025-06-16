@@ -29,3 +29,14 @@ export async function getRifasUser(userID) {
     if (error) throw error;
     return { data, error };
 }
+
+
+export async function getRifa(rifaId){
+    const { data, error } = await supabase
+    .from('rifas')
+    .select('*')
+    .eq('id', rifaId)
+    .single();
+    if (error) throw error;
+    return { data, error };
+}
