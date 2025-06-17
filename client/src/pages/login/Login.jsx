@@ -11,7 +11,7 @@ const Login = () => {
   const [registerVal, setRegisterVal] = useState(false);
 
   if (useLooged) {
-    navigate("/");
+    navigate("/inicio");
     return null;
   }
 

@@ -38,6 +38,7 @@ export async function getAllTickets(userId) {
     const { data, error } = await supabase
     .from('tickets')
     .select('*')
+    .eq('id_user', userId)
 
     if (error) throw error;
     return { data, error };

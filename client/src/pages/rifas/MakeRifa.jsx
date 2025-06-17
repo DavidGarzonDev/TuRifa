@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react'
+import React, {  useState } from 'react'
 import useAuthStore from '../../store/auth-store/use-auth-store';
 import { useNavigate } from 'react-router-dom';
 import { FaTicketAlt, FaGift, FaCoins, FaCalendarAlt, FaClock, FaInfoCircle } from 'react-icons/fa';
@@ -14,12 +14,12 @@ const MakeRifa = () => {
     startDate: '',
     endDate: ''
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const { useLooged } = useAuthStore();
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRifaData(prevState => ({
@@ -31,7 +31,7 @@ const MakeRifa = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const token = useAuthStore.getState().useLooged?.accessToken;
     const uid = useAuthStore.getState().useLooged?.uid;
 
@@ -44,7 +44,7 @@ const MakeRifa = () => {
     }
 
     try {
-      
+
       const response = await createRifa(data);
       if (response.error) {
         console.error('Error al crear la rifa:', response.error);
@@ -54,7 +54,7 @@ const MakeRifa = () => {
         alert('Rifa creada exitosamente!');
         navigate('/mis/rifas');
       }
-      
+
     } catch (error) {
       console.error('Error al crear la rifa:', error);
       alert('Ocurrió un error al crear la rifa. Intenta nuevamente.');
@@ -69,7 +69,7 @@ const MakeRifa = () => {
         <h2 className="text-3xl font-bold text-white">Por favor, inicia sesión para crear una rifa.</h2>
       </div>
     );
-  } 
+  }
 
   return (
     <div className="font-sans bg-gray-100 min-h-screen py-10">
@@ -138,7 +138,7 @@ const MakeRifa = () => {
                 </div>
               </div>
 
-              
+
             </div>
 
             {/* Columna 2 */}

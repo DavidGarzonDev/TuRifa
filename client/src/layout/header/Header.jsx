@@ -4,15 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { useCallback, useState, useEffect } from "react";
 import { FaBars, FaTimes, FaUser, FaTicketAlt, FaHome, FaSignOutAlt } from "react-icons/fa";
 import logo from "../../assets/icon-turifa.svg";
+import { IoTicket } from "react-icons/io5";
 
 const Header = () => {
   const { useLooged, logout } = useAuthStore();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  // Track scroll position to change header appearance
+  
+  
+  
   useEffect(() => {
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -149,6 +152,34 @@ const Header = () => {
                 >
                   <FaTicketAlt className="text-lg" />
                   <span>Mis Rifas</span>
+                </NavLink>
+                <NavLink
+                   to={`/boletos`}
+                   className={({ isActive }) =>
+                    `flex items-center gap-2 font-medium px-3 py-2 rounded-lg transition-all duration-300 
+                    ${isActive 
+                      ? "bg-blue-600/70 text-white font-semibold shadow-inner shadow-blue-800" 
+                      : "text-white hover:bg-blue-700/40 hover:text-blue-100"}
+                    `
+                  }
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <IoTicket className="text-lg" />
+                  <span>Mis Boletos</span>
+                </NavLink>
+                 <NavLink
+                  to="/rifas"
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 font-medium px-3 py-2 rounded-lg transition-all duration-300 
+                    ${isActive 
+                      ? "bg-blue-600/70 text-white font-semibold shadow-inner shadow-blue-800" 
+                      : "text-white hover:bg-blue-700/40 hover:text-blue-100"}
+                    `
+                  }
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <FaTicketAlt className="text-lg" />
+                  <span>Todas las Rifas</span>
                 </NavLink>
                 <button
                   type="button"

@@ -213,7 +213,7 @@ const Inicio = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {rifas.map((rifa, index) => (
+              {rifas.slice(0,3).map((rifa, index) => (
                 <CardRifa 
                   key={rifa.id || index}
                   rifa={rifa} 

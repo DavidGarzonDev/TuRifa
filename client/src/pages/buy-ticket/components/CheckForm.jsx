@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { decrementRifaTicket, getRifaById, updatePartialRifa } from '../../../api/rifa'
-import axios from 'axios'
+import { decrementRifaTicket } from '../../../api/rifa'
 import useAuthStore from '../../../store/auth-store/use-auth-store'
 import { createTicket } from '../../../api/ticket'
 
