@@ -15,6 +15,8 @@ export async function createRifa(rifa){
             userID : rifa.userId,
             ticket_price : rifa.ticketPrice,
             organizer : rifa.organizer,
+            total_tickets_sold: rifa.totalTicketsSold || 0,
+            revenue: rifa.revenue || 0,
         }
     ])
 
@@ -64,10 +66,10 @@ export async function deleteRifa(rifaId) {
     return { data, error };
 }
 
-export async function decrementRifaTickets(rifaId, amount = 1){
+export async function decrementRifaTickets(rifaId, amount){
     const { data: rifa, error: selectError } = await supabase
         .from('rifas')
-        .select('total_tickets')
+        .select('total_tickets, total_tickets_sold, revenue, ticket_price')
         .eq('id', rifaId)
         .single();
     
@@ -78,9 +80,16 @@ export async function decrementRifaTickets(rifaId, amount = 1){
     }
 
     const newTotal = rifa.total_tickets - amount;
+    const sold = rifa.total_tickets_sold + amount;
+    const newRevenue = rifa.revenue + (rifa.ticket_price * amount);
+
     const { data, error } = await supabase
         .from('rifas')
-        .update({ total_tickets: newTotal })
+        .update({ 
+            total_tickets: newTotal,
+            total_tickets_sold: sold,
+            revenue: newRevenue,
+        })
         .eq('id', rifaId);
     
     if (error) throw error;

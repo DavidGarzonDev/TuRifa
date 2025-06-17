@@ -50,7 +50,7 @@ async function CreateTicket(rifaId, userId, price, methodPago, idPago = null) {
     }
 }
 
-const CheckoutForm = ({ setShowPaymentForm, ticketPrice, rifaId }) => {
+const CheckoutForm = ({ setShowPaymentForm, ticketPrice, rifaId, amountTickets }) => {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -82,7 +82,7 @@ const CheckoutForm = ({ setShowPaymentForm, ticketPrice, rifaId }) => {
         setPaymentStatus('¡Pago completado con éxito! Tu boleto ha sido registrado.')
         try {
             
-            const amount = 1; 
+            const amount = amountTickets; 
             const updateResult = await UpdateRifa(rifaId, amount);
             
             if (!updateResult.success) {

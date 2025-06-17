@@ -1,4 +1,5 @@
-import { createTicket } from "../models/ticket.models.js";
+import { createTicket, getAllTicketsModel } from "../models/ticket.models.js";
+import admin from "../firebase.js";
 
 
 export const createTicketController = async (req, res) => {
@@ -23,13 +24,21 @@ export const createTicketController = async (req, res) => {
 
 export const getAllTickets = async (req, res) => {
     try {
-        const { userId } = req.body
+        const { token } = req.body.userId
 
-        if (!userId) {
-            return res.status(404).json{{error:"No existe el usuario"}}
+        if (!token) {
+            return res.status(400).json({ error: "Token de usuario no proporcionado" });
         }
 
-        const {data, errors} = getAllTickets(userId)
+        const decode = await admin.auth().verifyIdToken(token);
+        const {uid} = decode;
+
+
+        if (!uid) {
+            return res.status(404).json({error:"No existe el usuario"});
+        }
+
+        const {data, error} = await getAllTicketsModel(uid);
         if (error) {
             return res.status(500).json({ error: "Error al obtener las rifas" });
         }
@@ -37,7 +46,7 @@ export const getAllTickets = async (req, res) => {
         res.status(200).json({ tickets: data });
     } catch (error) {
         console.error("Error en la peticion de tdoas las rifas", error)
-        res.status(500).json({errror : "Error interno del servidor"})
+        res.status(400).json({error : "Error interno del servidor"})
     }
     
 }

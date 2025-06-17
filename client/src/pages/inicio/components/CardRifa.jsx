@@ -15,7 +15,8 @@ const CardRifa = ({ rifa, icon }) => {
   };
   
   const rifaIcon = icon || <FaCoins className="text-yellow-400 text-4xl mb-2 mx-auto" />;
-  
+  const name = useLooged?.displayName
+
   return (
     <div className="flex gap-8 justify-center mb-8">
       <div className="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-lg overflow-hidden border border-blue-100 min-w-[220px] flex-1 max-w-xs transform hover:scale-105 transition-all duration-300 hover:shadow-xl relative flex flex-col">
@@ -89,7 +90,7 @@ const CardRifa = ({ rifa, icon }) => {
               className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
               <span>Esta rifa es tuya, no puedes participar!</span>
             </button>
-          ) : (
+          ) : rifa.total_tickets > 0 ?  (
             <>
             <button 
             onClick={!useLooged ? () => navigate(`/login`) : () => navigate(`/comprar/rifa/${rifa.id}`)} 
@@ -103,6 +104,12 @@ const CardRifa = ({ rifa, icon }) => {
             ¡No esperes más, los boletos se agotan rápido!
           </p> 
             </>
+          ): (
+            <button 
+              disabled
+              className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
+              <span>Boletos agotados</span>
+            </button>
           )}
         </div>
       </div>
