@@ -1,18 +1,19 @@
 import React from "react";
 import { FaCoins, FaTicketAlt, FaCalendarAlt, FaDollarSign, FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import  useAuthStore  from "../../../store/auth-store/use-auth-store.js"
+import  useAuthStore from "../../../store/auth-store/use-auth-store.js"
 
 const CardRifa = ({ rifa, icon }) => {
   const navigate = useNavigate();
   const { useLooged, logout } = useAuthStore();
+
+  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES');
   };
   
-  // Use default icon if none provided
   const rifaIcon = icon || <FaCoins className="text-yellow-400 text-4xl mb-2 mx-auto" />;
   
   return (
@@ -82,7 +83,7 @@ const CardRifa = ({ rifa, icon }) => {
         
         {/* Button section */}
         <div className="px-6 pb-6">
-          { useLooged.displayName === rifa.organizer ? ( 
+          { name === rifa.organizer ? ( 
             <button 
               disabled
               className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
