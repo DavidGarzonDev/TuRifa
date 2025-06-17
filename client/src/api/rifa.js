@@ -6,3 +6,4 @@ export const getAllRifas = () => axios.get(import.meta.env.VITE_API_BACKEND_GET_
 export const getRifaById = (rifaId) => axios.get(import.meta.env.VITE_API_GET_RIFA, {params : {rifaId}});
 export const updatePartialRifa = (id, fieldsToUpdate) => axios.patch(import.meta.env.VITE_UPDATE_RIFA, fieldsToUpdate, {params : {id}});
 export const decrementRifaTicket = (rifaId, amount) => axios.patch(import.meta.env.VITE_DECREMENT_TICKET, {rifaId, amount});
+export const getAllTicketsUser = (userId) => axios.post(import.meta.env.VITE_ALL_TICKETS, {userId});

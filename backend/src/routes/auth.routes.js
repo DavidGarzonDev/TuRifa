@@ -2,7 +2,8 @@ import { Router } from "express";
 import { register, login } from "../controllers/auth.controllers.js";
 import { getRifasUsers, createRifas, getAllRifas, getRifaById, updatePartialRifa, decrementRifaTicket } from "../controllers/rifa.controllers.js";
 import { requestPaymentIntent } from "../controllers/striper.controllers.js";
-import { createTicketController } from "../controllers/ticket.controllers.js";
+import { createTicketController,getAllTickets } from "../controllers/ticket.controllers.js";
+
 
 
 const router = Router();
@@ -17,5 +18,6 @@ router.get("/get/rifa", getRifaById);
 router.patch("/update/rifa", updatePartialRifa);
 router.patch("/decrement/ticket", decrementRifaTicket);
 router.post("/create/ticket", createTicketController);
+router.post("/get/all/tickets", getAllTickets)
 
 export default router;
