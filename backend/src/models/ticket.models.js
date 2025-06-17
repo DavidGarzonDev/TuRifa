@@ -27,14 +27,12 @@ export async function getTicketsByRifaId(rifaId) {
     const { data, error } = await supabase
     .from('tickets')
     .select('*')
-    .eq('rifaId', rifaId);
-mor 
-
+    .eq('rifaId', rifaId); 
     if (error) throw error;
     return { data, error };
 }
 
-export async function getAllTickets(userId) {
+export async function getAllTicketsModel(userId) {
     const { data, error } = await supabase
     .from('tickets')
     .select('*')

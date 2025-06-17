@@ -71,6 +71,7 @@ const BuyTicket = () => {
               setShowPaymentForm={setShowPaymentForm} 
               ticketPrice={grandTotal} 
               rifaId={rifaId}
+              amountTickets={ticketQuantity}
             />
           </Elements>
         ) : (
