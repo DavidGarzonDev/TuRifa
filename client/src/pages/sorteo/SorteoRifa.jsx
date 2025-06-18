@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaTrophy, FaArrowLeft, FaExclamationCircle, FaInfoCircle } from 'react-icons/fa';
 import useAuthStore from '../../store/auth-store/use-auth-store';
 import { getRifaById, checkRifaForDraw, realizarSorteo } from '../../api/rifa';
-import AnimacionSorteo from '../../components/sorteo/AnimacionSorteo';
-import ResultadoSorteo from '../../components/sorteo/ResultadoSorteo';
+import AnimacionSorteo from '../../components/sorteo/AnimacionSorteo.jsx';
+import ResultadoSorteo from '../../components/sorteo/ResultadoSorteo.jsx';
 
 const SorteoRifa = () => {
   const { rifaId } = useParams();
