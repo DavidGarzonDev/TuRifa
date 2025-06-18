@@ -90,7 +90,14 @@ const CardRifa = ({ rifa, icon }) => {
               className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
               <span>Esta rifa es tuya, no puedes participar!</span>
             </button>
-          ) : rifa.total_tickets > 0 ?  (
+          ) : rifa.state === "Cerrada" ? (
+            <button 
+              disabled
+              className="bg-gray-300 text-gray-500 rounded-lg py-3 w-full font-bold text-base transition-all duration-300 shadow-md flex items-center justify-center cursor-not-allowed" >
+              <span>Rifa Finalizada</span>
+            </button>
+          ) :
+          rifa.total_tickets > 0 ?  (
             <>
             <button 
             onClick={!useLooged ? () => navigate(`/login`) : () => navigate(`/comprar/rifa/${rifa.id}`)} 

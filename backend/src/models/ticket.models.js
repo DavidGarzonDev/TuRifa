@@ -53,9 +53,27 @@ export async function getAllTicketsModel(userId) {
     return { data, error };
 }
 
+export async function getTicketById(ticketId) {
+    const { data, error } = await supabase
+    .from('tickets')
+    .select('*')
+    .eq('id', ticketId)
+    .single();
+    
+    if (error) throw error;
+    
+    // Procesamos el número de boleto si no existe
+    if (data && !data.numero_boleto) {
+        data.numero_boleto = `#${String(data.id).padStart(4, '0')}`;
+    }
+    
+    return { data, error };
+}
+
 // Exportamos las funciones en un objeto
 export const ticketModel = {
     createTicket,
     getTicketsByRifaId,
-    getAllTicketsModel
+    getAllTicketsModel,
+    getTicketById
 };

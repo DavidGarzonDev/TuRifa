@@ -1,4 +1,4 @@
-import { createTicket, getAllTicketsModel, getTicketsByRifaId } from "../models/ticket.models.js";
+import { createTicket, getAllTicketsModel, getTicketsByRifaId, ticketModel } from "../models/ticket.models.js";
 import admin from "../firebase.js";
 
 
@@ -65,6 +65,34 @@ export const getTicketsByRifaIdController = async (req, res) => {
         res.status(200).json(tickets);
     } catch (error) {
         console.error("Error al obtener tickets por ID de rifa:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+// Controlador para obtener un ticket específico por su ID
+export const getTicketByIdController = async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+        
+        if (!ticketId) {
+            return res.status(400).json({ error: "ID de ticket no proporcionado" });
+        }
+        
+        // Utiliza el modelo para obtener el ticket
+        const { data, error } = await ticketModel.getTicketById(ticketId);
+        
+        if (error) {
+            console.error("Error al obtener ticket por ID:", error);
+            return res.status(500).json({ error: "Error al obtener ticket" });
+        }
+        
+        if (!data) {
+            return res.status(404).json({ error: "Ticket no encontrado" });
+        }
+        
+        res.status(200).json({ ticket: data });
+    } catch (error) {
+        console.error("Error al obtener ticket por ID:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 }

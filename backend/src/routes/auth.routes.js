@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login } from "../controllers/auth.controllers.js";
+import { register, login, getUserByUidController } from "../controllers/auth.controllers.js";
 import { 
     getRifasUsers, 
     createRifas, 
@@ -14,7 +14,8 @@ import { requestPaymentIntent } from "../controllers/striper.controllers.js";
 import { 
     createTicketController, 
     getAllTickets, 
-    getTicketsByRifaIdController 
+    getTicketsByRifaIdController,
+    getTicketByIdController 
 } from "../controllers/ticket.controllers.js";
 
 
@@ -34,5 +35,7 @@ router.post("/get/all/tickets", getAllTickets);
 router.post("/rifas/:rifaId/check-draw", checkRifaForDraw);
 router.post("/rifas/:rifaId/sorteo", realizarSorteo);
 router.get("/tickets/rifa/:rifaId", getTicketsByRifaIdController);
+router.post("/get/user", getUserByUidController);
+router.get("/tickets/:ticketId", getTicketByIdController);
 
 export default router;

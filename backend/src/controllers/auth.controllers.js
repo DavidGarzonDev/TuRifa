@@ -129,6 +129,32 @@ export const login = async (req, res) => {
   }
 };
 
+export const getUserByUidController = async (req, res) => {
+  const { token, uid } = req.body;
+
+  if (!token || !uid) {
+    return res.status(400).json({ error: "Token y UID son requeridos" });
+  }
+
+  try {
+    // Verificar el token primero para asegurar que la solicitud es legítima
+    await admin.auth().verifyIdToken(token);
+
+    // Obtener el usuario por UID
+    const userData = await getUserByUid(uid);
+    
+    if (!userData || !userData.data) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Enviamos los datos directamente para evitar anidamientos innecesarios
+    return res.status(200).json(userData);
+  } catch (error) {
+    console.error("Error al obtener usuario por UID:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
 
 
 
