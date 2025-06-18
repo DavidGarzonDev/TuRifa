@@ -312,15 +312,16 @@ const UserRifas = () => {
                     <p className="text-xs text-gray-500">
                       {rifa.sold_tickets || 0} de {rifa.total_tickets} boletos vendidos
                     </p>
-                  </div>
-                  
-                  {/* Acciones */}
+                  </div>                    {/* Acciones */}
                   <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between items-center">
                     {/* Días restantes o estado final */}
-                    {isCompleted ? (
-                      <span className="text-sm font-medium text-blue-600 flex items-center">
-                        <FaExclamationCircle className="mr-1" /> Requiere sorteo
-                      </span>
+                    {!isCompleted ? (
+                      <Link 
+                        to={`/sorteo/${rifa.id}`}
+                        className="text-sm font-medium text-blue-600 flex items-center hover:text-blue-700"
+                      >
+                        <FaTrophy className="mr-1" /> Realizar Sorteo
+                      </Link>
                     ) : isActive ? (
                       <span className="text-sm font-medium text-green-600">
                         {Math.ceil((new Date(rifa.end_date) - new Date()) / (1000 * 60 * 60 * 24))} días restantes

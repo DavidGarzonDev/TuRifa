@@ -1,4 +1,4 @@
-import { createTicket, getAllTicketsModel } from "../models/ticket.models.js";
+import { createTicket, getAllTicketsModel, getTicketsByRifaId } from "../models/ticket.models.js";
 import admin from "../firebase.js";
 
 
@@ -45,8 +45,26 @@ export const getAllTickets = async (req, res) => {
         
         res.status(200).json({ tickets: data });
     } catch (error) {
-        console.error("Error en la peticion de tdoas las rifas", error)
+        console.error("Error en la peticion de todas las rifas", error)
         res.status(400).json({error : "Error interno del servidor"})
     }
-    
+}
+
+// Nuevo controlador para obtener tickets por ID de rifa
+export const getTicketsByRifaIdController = async (req, res) => {
+    try {
+        const { rifaId } = req.params;
+        
+        if (!rifaId) {
+            return res.status(400).json({ error: "ID de rifa no proporcionado" });
+        }
+        
+        // Utiliza el modelo para obtener los tickets
+        const tickets = await getTicketsByRifaId(rifaId);
+        
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error("Error al obtener tickets por ID de rifa:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
 }

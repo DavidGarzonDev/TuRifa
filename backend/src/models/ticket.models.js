@@ -2,6 +2,7 @@ import { supabase } from "../db.js";
 
 
 export async function createTicket(ticket){
+   
     const { data, error } = await supabase
     .from('tickets')
     .insert([
@@ -24,20 +25,37 @@ export async function createTicket(ticket){
 
 
 export async function getTicketsByRifaId(rifaId) {
+  
     const { data, error } = await supabase
     .from('tickets')
-    .select('*')
-    .eq('rifaId', rifaId); 
+    .select("*")
+    .eq('id_rifa', rifaId);
+    
     if (error) throw error;
-    return { data, error };
+
+    const processedData = data.map(ticket => {
+        if (!ticket.numero_boleto) {
+            ticket.numero_boleto = `#${String(ticket.id).padStart(4, '0')}`;
+        }
+        return ticket;
+    });
+    
+    return processedData; // Retornamos los datos procesados
 }
 
 export async function getAllTicketsModel(userId) {
     const { data, error } = await supabase
     .from('tickets')
     .select('*')
-    .eq('id_user', userId)
+    .eq('id_user', userId);
 
     if (error) throw error;
     return { data, error };
 }
+
+// Exportamos las funciones en un objeto
+export const ticketModel = {
+    createTicket,
+    getTicketsByRifaId,
+    getAllTicketsModel
+};
