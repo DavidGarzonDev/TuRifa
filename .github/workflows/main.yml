@@ -83,6 +83,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JorgeLNJunior/render-deploy@v1.4.4
         with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
-          clear-cache: false
+          clear_cache: false
