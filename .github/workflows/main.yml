@@ -43,7 +43,7 @@ jobs:
           VITE_STORAGE_BUCKET: ${{ secrets.VITE_STORAGE_BUCKET }}
           VITE_MESSAGING_SENDER_ID: ${{ secrets.VITE_MESSAGING_SENDER_ID }}
           VITE_APP_ID: ${{ secrets.VITE_APP_ID }}
-          
+
       - name: Build frontend
         run: npm run build
         env:
@@ -78,7 +78,7 @@ jobs:
         continue-on-error: true
 
       - name: Run backend tests
-        run: npm run test
+        run: npm run test:ci
         env:
           CI: true
 
