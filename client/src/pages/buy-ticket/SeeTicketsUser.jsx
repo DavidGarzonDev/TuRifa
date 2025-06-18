@@ -23,7 +23,6 @@ const SeeTicketsUser = () => {
         const request = {
           token: useLooged.accessToken
         };
-
         const response = await getAllTicketsUser(request);
         const data = response.data.tickets;
         setTickets(data);
