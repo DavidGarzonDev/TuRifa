@@ -31,8 +31,9 @@ createRoot(document.getElementById("root")).render(
           <Route path="/mis/rifas" element={<UserRifas />} />
           <Route path='/comprar/rifa/:rifaId' element={<BuyTicket />} />
           <Route path="/rifas" element={<RifasAll/>}/>
-          <Route path='/boletos' element={<SeeTicketsUser/>}/>          <Route path="/sobre-nosotros" element={<AboutNew />}/>
-          <Route path="ayuda" element={<Help />} />
+          <Route path='/boletos' element={<SeeTicketsUser/>}/>          
+          <Route path="/sobre-nosotros" element={<AboutNew />}/>
+          <Route path="/ayuda" element={<Help />} />
           <Route path="/sorteo/:rifaId" element={<SorteoRifa />} />
           <Route path="/rifa/ganador/:rifaId" element={<ViewWinUser />} />
           <Route path="*" element={<NotFound />} />
