@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaLaptopCode, FaLightbulb, FaUsers, FaHandshake, FaRocket, FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+// comentario de prueba 
 
 const AboutNew = () => {
   const [activeTab, setActiveTab] = useState('nosotros');
