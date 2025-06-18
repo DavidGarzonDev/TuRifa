@@ -80,7 +80,7 @@ const BuyTicket = () => {
             <section className="lg:col-span-3 bg-white rounded-2xl shadow-lg overflow-hidden border border-indigo-100">
               <div className="relative h-48 bg-indigo-600">
                 <div className="absolute inset-0 bg-opacity-70 bg-indigo-800 flex items-center justify-center">
-                  <img src="/public/image/gift.png" alt="Premio" className="h-32 object-contain opacity-90" />
+                  <img src="/image/gift.png" alt="Premio" className="h-32 object-contain opacity-90" />
                 </div>
                 <div className="absolute top-4 right-4 bg-yellow-400 text-indigo-900 font-bold py-1 px-3 rounded-full text-sm">
                   ¡Gran Premio!

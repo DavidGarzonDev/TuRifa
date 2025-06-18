@@ -2,10 +2,11 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act } from '@testing-library/react'; 
 import useAuthStore from './use-auth-store'; 
-
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { loginRequest } from '../../api/auth';
 import { auth } from '../../../firebase.config';
+
+
 vi.mock('firebase/auth', async (importOriginal) => {
     const actual = await importOriginal(); 
     return {

@@ -34,9 +34,15 @@ jobs:
         continue-on-error: true
 
       - name: Run frontend tests
-        run: npm test
+        run: npm run test
         env:
           CI: true
+          VITE_APIKEY: ${{ secrets.VITE_APIKEY }}
+          VITE_AUTHDOMAIN: ${{ secrets.VITE_AUTHDOMAIN }}
+          VITE_PROJECTID: ${{ secrets.VITE_PROJECTID }}
+          VITE_STORAGE_BUCKET: ${{ secrets.VITE_STORAGE_BUCKET }}
+          VITE_MESSAGING_SENDER_ID: ${{ secrets.VITE_MESSAGING_SENDER_ID }}
+          VITE_APP_ID: ${{ secrets.VITE_APP_ID }}
 
       - name: Build frontend
         run: npm run build
@@ -72,7 +78,7 @@ jobs:
         continue-on-error: true
 
       - name: Run backend tests
-        run: npm test
+        run: npm run test:ci
         env:
           CI: true
 

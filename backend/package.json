@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "test:ci" : "jest"
   },
   "keywords": [],
   "author": "",
