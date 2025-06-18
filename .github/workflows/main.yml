@@ -25,7 +25,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm' # Usa caché genérico si package-lock.json no está presente
+          cache: 'npm'
+          cache-dependency-path: ./client/package-lock.json
 
       - name: Install frontend dependencies
         run: npm ci
@@ -64,7 +65,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm' # Usa caché genérico si package-lock.json no está presente
+          cache: 'npm'
+          cache-dependency-path: ./backend/package-lock.json
 
       - name: Install backend dependencies
         run: npm ci
