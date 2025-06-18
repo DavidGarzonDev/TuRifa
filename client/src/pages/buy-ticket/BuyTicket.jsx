@@ -5,6 +5,9 @@ import { paymentIntent } from '../../utils/striper/paymant-intent-utils'
 import CheckoutForm from './components/CheckForm'
 import { Elements } from '@stripe/react-stripe-js'
 import { getRifaById } from '../../api/rifa'
+import { FaTicket } from "react-icons/fa6";
+
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
@@ -147,23 +150,24 @@ const BuyTicket = () => {
                   <label htmlFor="quantity" className="block font-medium text-gray-700 mb-2">
                     Cantidad de boletos
                   </label>
-                  <div className="flex rounded-md shadow-sm">
-                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z" />
-                      </svg>
+                  <div className="flex justify-between rounded-md ">
+                    <span className="inline-flex items-center px-1 rounded-l-md bg-gray-50 text-gray-500">
+                      <FaTicket />
                     </span>
+                      
+                    <h1><strong>1</strong></h1>
                     <input
                       id="quantity"
                       type="number"
                       min="1"
-                      max="10"
+                      max="1"
+                      hidden
                       value={ticketQuantity}
                       onChange={(e) => setTicketQuantity(parseInt(e.target.value, 10) || 1)}
                       className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300 py-3"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Máximo 10 boletos por persona</p>
+                  <p className="mt-1 text-xs text-gray-500">En el momento solo se pueden comprar boletos unitarios.</p>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4">

@@ -15,6 +15,8 @@ import UserRifas from "./pages/user-rifa/UserRifas.jsx";
 import BuyTicket from "./pages/buy-ticket/BuyTicket.jsx";
 import RifasAll from "./pages/rifas/RifasAll.jsx";
 import SeeTicketsUser from "./pages/buy-ticket/SeeTicketsUser.jsx";
+import AboutNew from "./pages/about/AboutNew.jsx";
+import Help from "./pages/about/Help.jsx";
 
 createRoot(document.getElementById("root")).render(
 
@@ -28,7 +30,10 @@ createRoot(document.getElementById("root")).render(
           <Route path='/comprar/rifa/:rifaId' element={<BuyTicket />} />
           <Route path="/rifas" element={<RifasAll/>}/>
           <Route path='/boletos' element={<SeeTicketsUser/>}/>
+          <Route path="/sobre-nosotros" element={<AboutNew />}/>
+          <Route path="ayuda" element={<Help />} />
           <Route path="*" element={<NotFound />} />
+          
           
         </Routes>
       </Layout>
