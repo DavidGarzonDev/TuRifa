@@ -1,6 +1,6 @@
-import { FaTicketAlt, FaGift, FaCoins, FaDollarSign, FaTrophy, FaChevronRight, FaLock, FaRegLightbulb, FaStar } from "react-icons/fa";
+import { FaTicketAlt, FaGift, FaCoins, FaDollarSign, FaTrophy, FaChevronRight, FaLock, FaRegLightbulb, FaStar, FaChevronLeft } from "react-icons/fa";
 import CardRifa from "./components/CardRifa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAllRifas } from "../../api/rifa";
 import { useNavigate } from "react-router";
 
@@ -9,6 +9,45 @@ const Inicio = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Array de contenido para el slider (imágenes y frases)
+  const sliderContent = [
+    {
+      title: '¡Gana <span class="text-yellow-300">increíbles</span><br/>premios con solo<br/>un <span class="text-yellow-300">click</span>!',
+      subtitle: 'Crea o participa en rifas de manera<br/><span class="font-bold text-white">segura, rápida y transparente</span>.',
+      image: '/image/prize-3.png',
+    },
+    {
+      title: 'Convierte tus <span class="text-yellow-300">sueños</span><br/>en realidad<br/>con <span class="text-yellow-300">TuRifa</span>!',
+      subtitle: 'Premios exclusivos que<br/><span class="font-bold text-white">están esperando por ti</span>.',
+      image: '/image/prize-2.png',
+    },
+    {
+      title: 'Cada boleto es una<br/><span class="text-yellow-300">oportunidad</span><br/>de <span class="text-yellow-300">ganar</span>!',
+      subtitle: 'Miles de ganadores<br/><span class="font-bold text-white">¡El próximo podrías ser tú!</span>',
+      image: '/image/prize-1.png',
+    }
+  ];
+  
+  // Función para avanzar al siguiente slide
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % sliderContent.length);
+  }, [sliderContent.length]);
+  
+  // Función para retroceder al slide anterior
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === 0 ? sliderContent.length - 1 : prev - 1));
+  }, [sliderContent.length]);
+  
+  // Efecto para el cambio automático de slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000); // Cambia cada 5 segundos
+    
+    return () => clearInterval(interval);
+  }, [nextSlide]);
   
   useEffect(() => {
     const fetchRifas = async () => {
@@ -38,7 +77,7 @@ const Inicio = () => {
   return (
     <div className="font-sans min-h-screen bg-gradient-to-b from-gray-50 to-blue-50">
       
-      {/* Hero Section - Mejorado con gradientes y animaciones */}
+      {/* Hero Section - Ahora con slider/carrusel */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl mb-16 overflow-hidden relative py-12">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/4"></div>
@@ -46,46 +85,103 @@ const Inicio = () => {
         
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-10 max-w-6xl relative z-10">
           <div className="w-full md:w-1/2 flex flex-col justify-center px-4 md:px-0 py-8 md:py-16">
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6 text-center md:text-left">
-              ¡Gana <span className="text-yellow-300">increíbles</span>
-              <br />
-              premios con solo
-              <br />
-              un <span className="text-yellow-300">click</span>!
-            </h1>
-            <p className="mt-2 text-lg md:text-xl text-blue-100 font-medium text-center md:text-left leading-relaxed mb-8">
-              Crea o participa en rifas de manera
-              <br />
-              <span className="font-bold text-white">segura, rápida y transparente</span>.
-            </p>
+            {/* Contenido del slider - textos */}
+            <div className="relative overflow-hidden h-48 md:h-70">
+              {sliderContent.map((slide, index) => (
+                <div 
+                  key={index}
+                  className={`absolute w-full transition-all duration-700 transform ${
+                    index === currentSlide 
+                      ? "translate-x-0 opacity-100" 
+                      : index < currentSlide 
+                        ? "-translate-x-full opacity-0" 
+                        : "translate-x-full opacity-0"
+                  }`}
+                >
+                  <h1 
+                    className="text-4xl md:text-5xl font-extrabold leading-tight mb-6 text-center md:text-left"
+                    dangerouslySetInnerHTML={{ __html: slide.title }}
+                  />
+                  <p 
+                    className="mt-2 text-lg md:text-xl text-blue-100 font-medium text-center md:text-left leading-relaxed mb-8"
+                    dangerouslySetInnerHTML={{ __html: slide.subtitle }}
+                  />
+                </div>
+              ))}
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button className="bg-white text-indigo-700 hover:bg-yellow-300 py-3 px-8 rounded-full font-bold text-lg shadow-lg transition-all duration-300 hover:shadow-xl flex items-center justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-20 md:mt-12">
+              <button 
+                onClick={() => navigate("/rifas")}
+                className="bg-white text-indigo-700 hover:bg-yellow-300 py-3 px-8 rounded-full font-bold text-lg shadow-lg transition-all duration-300 hover:shadow-xl flex items-center justify-center">
                 Explorar Rifas
                 <FaChevronRight className="ml-2" />
               </button>
               <button 
-               onClick={()=> navigate("/crear/rifa")}
-               className="bg-transparent hover:bg-blue-700 border-2 border-white py-3 px-8 rounded-full font-bold text-lg transition-colors duration-300 flex items-center justify-center">
-
+                onClick={()=> navigate("/crear/rifa")}
+                className="bg-transparent hover:bg-blue-700 border-2 border-white py-3 px-8 rounded-full font-bold text-lg transition-colors duration-300 flex items-center justify-center">
                 Crear Rifa
               </button>
+            </div>
+            
+            {/* Controles del slider */}
+            <div className="flex justify-center md:justify-start mt-6 space-x-3">
+              {sliderContent.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    currentSlide === index 
+                      ? "bg-yellow-300 w-6" 
+                      : "bg-white opacity-50 hover:opacity-75"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
           
           <div className="w-full md:w-1/2 flex items-center justify-center px-4 md:px-0 mt-8 md:mt-0 relative">
             <div className="absolute w-64 h-64 bg-yellow-300 rounded-full filter blur-3xl opacity-30"></div>
-            <img
-              className="relative z-10 h-auto max-h-80 w-auto object-contain mx-auto transform hover:scale-105 transition-transform duration-700 bounce-slow"
-              src="/image/gift.png"
-              alt="Premio de rifa"
-            />
+            
+            {/* Contenido del slider - imágenes */}
+            <div className="relative w-full h-80 flex justify-center items-center">
+              {sliderContent.map((slide, index) => (
+                <img
+                  key={index}
+                  src={slide.image}
+                  alt={`Slide ${index + 1}`}
+                  className={`absolute max-h-1000 w-auto object-contain mx-auto transform hover:scale-105 transition-all duration-700 bounce-slow
+                    ${index === currentSlide 
+                      ? "opacity-100 scale-100" 
+                      : "opacity-0 scale-90"}`}
+                />
+              ))}
+            </div>
+            
+            {/* Botones adicionales para el control del slider */}
+            <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 flex justify-between items-center px-4 md:px-8">
+              <button 
+                onClick={prevSlide}
+                className="bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 text-white transition-all duration-300"
+                aria-label="Previous slide"
+              >
+                <FaChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 text-white transition-all duration-300"
+                aria-label="Next slide"
+              >
+                <FaChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </section>
       
 
-      {/* How it works - Mejorado con tarjetas y transiciones */}
+      {/* How it works - Sin cambios */}
       <section className="max-w-5xl mx-auto mb-20 px-6">
         <div className="text-center mb-12">
           <span className="bg-blue-100 text-blue-700 text-sm font-medium py-1 px-3 rounded-full">Proceso Sencillo</span>
@@ -225,7 +321,7 @@ const Inicio = () => {
         </div>
       </section>
 
-      {/* Benefits section - New */}
+      {/* Benefits section - Sin cambios */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -266,7 +362,7 @@ const Inicio = () => {
         </div>
       </section>
 
-      {/* Footer-like info - Improved */}
+      {/* Footer-like info - Sin cambios */}
       <section className="max-w-5xl mx-auto my-12 px-6">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between items-center p-8 md:p-10">
