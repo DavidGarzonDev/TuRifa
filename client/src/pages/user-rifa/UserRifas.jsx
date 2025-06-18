@@ -4,6 +4,7 @@ import { FaTicketAlt, FaEdit, FaTrashAlt, FaEye, FaPlus, FaUsers, FaCalendarAlt,
          FaFilter, FaGift, FaChartLine, FaArrowUp, FaStar, FaTrophy, FaExclamationCircle } from 'react-icons/fa';
 import useAuthStore from '../../store/auth-store/use-auth-store';
 import { getRifas } from '../../api/rifa.js';
+import ViewWinUser from './components/ViewWinUser.jsx';
 
 const UserRifas = () => {
   const { useLooged } = useAuthStore();
@@ -31,14 +32,13 @@ const UserRifas = () => {
   const handleFilterChange = (e) => {
     setFilterStatus(e.target.value);
   };
-
   const filteredRifas = filterStatus === 'all' 
     ? rifasData 
     : rifasData.filter(rifa => {
         if (filterStatus === 'active') {
-          return new Date(rifa.start_date) <= new Date() && new Date(rifa.end_date) >= new Date();
+          return new Date(rifa.start_date) <= new Date() && new Date(rifa.end_date) >= new Date() && !rifa.winner_user_id;
         } else if (filterStatus === 'completed') {
-          return new Date(rifa.end_date) < new Date();
+          return rifa.winner_user_id || new Date(rifa.end_date) < new Date();
         } else if (filterStatus === 'scheduled') {
           return new Date(rifa.start_date) > new Date();
         }
@@ -210,10 +210,9 @@ const UserRifas = () => {
           </div>
         ) : filteredRifas.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRifas.map((rifa) => {
-              // Determinar estado de la rifa
-              const isActive = new Date(rifa.start_date) <= new Date() && new Date(rifa.end_date) >= new Date();
-              const isCompleted = new Date(rifa.end_date) < new Date();
+            {filteredRifas.map((rifa) => {              // Determinar estado de la rifa
+              const isActive = new Date(rifa.start_date) <= new Date() && new Date(rifa.end_date) >= new Date() && !rifa.winner_user_id;
+              const isCompleted = rifa.winner_user_id || new Date(rifa.end_date) < new Date();
               const isScheduled = new Date(rifa.start_date) > new Date();
               
               const soldPercentage = ((rifa.total_tickets_sold || 0) / (rifa.total_tickets + rifa.total_tickets_sold || 1)) * 100;
@@ -312,18 +311,23 @@ const UserRifas = () => {
                     <p className="text-xs text-gray-500">
                       {rifa.sold_tickets || 0} de {rifa.total_tickets} boletos vendidos
                     </p>
-                  </div>
-                  
-                  {/* Acciones */}
+                  </div>                  {/* Acciones */}
                   <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between items-center">
                     {/* Días restantes o estado final */}
-                    {isCompleted ? (
+                    {isCompleted && rifa.winner_user_id ? (
                       <span className="text-sm font-medium text-blue-600 flex items-center">
-                        <FaExclamationCircle className="mr-1" /> Requiere sorteo
+                        <FaTrophy className="mr-1 text-amber-500" /> Sorteo realizado
                       </span>
                     ) : isActive ? (
-                      <span className="text-sm font-medium text-green-600">
-                        {Math.ceil((new Date(rifa.end_date) - new Date()) / (1000 * 60 * 60 * 24))} días restantes
+                      <Link 
+                        to={`/sorteo/${rifa.id}`}
+                        className="text-sm font-medium text-blue-600 flex items-center hover:text-blue-700"
+                      >
+                        <FaTrophy className="mr-1" /> Realizar Sorteo
+                      </Link>
+                    ) : isCompleted ? (
+                      <span className="text-sm font-medium text-red-600">
+                        Finalizada sin sorteo
                       </span>
                     ) : (
                       <span className="text-sm font-medium text-amber-600">
@@ -333,26 +337,45 @@ const UserRifas = () => {
                     
                     {/* Botones de acción */}
                     <div className="flex space-x-1">
-                      <button 
-                        className="p-2 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors" 
-                        title="Ver detalles"
-                      >
-                        <FaEye />
-                      </button>
-                      <button 
-                        className="p-2 rounded-full text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 transition-colors" 
-                        title="Editar"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button 
-                        className="p-2 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors" 
-                        title="Eliminar"
-                      >
-                        <FaTrashAlt />
-                      </button>
+                      {isCompleted && rifa.winner_user_id ? (
+                        <Link
+                          to=""
+                          className="p-2 rounded-full text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-1"
+                          title="Ver ganador"
+                        >
+                          <FaStar className="text-amber-500" /> Ver ganador
+                        </Link>
+                      ) : (
+                        <>
+                          <button 
+                            className="p-2 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors" 
+                            title="Ver detalles"
+                          >
+                            <FaEye />
+                          </button>
+                          <button 
+                            className="p-2 rounded-full text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 transition-colors" 
+                            title="Editar"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button 
+                            className="p-2 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors" 
+                            title="Eliminar"
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
+
+                  {/* Mostrar información del ganador si existe */}
+                  {isCompleted && rifa.winner_user_id && (
+                    <div className="px-4 py-3 bg-gradient-to-r from-amber-50 to-yellow-50 border-t border-amber-100">
+                      <ViewWinUser rifaId={rifa.id} />
+                    </div>
+                  )}
                 </div>
               );
             })}

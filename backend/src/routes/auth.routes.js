@@ -1,9 +1,22 @@
 import { Router } from "express";
-import { register, login } from "../controllers/auth.controllers.js";
-import { getRifasUsers, createRifas, getAllRifas, getRifaById, updatePartialRifa, decrementRifaTicket } from "../controllers/rifa.controllers.js";
+import { register, login, getUserByUidController } from "../controllers/auth.controllers.js";
+import { 
+    getRifasUsers, 
+    createRifas, 
+    getAllRifas, 
+    getRifaById, 
+    updatePartialRifa, 
+    decrementRifaTicket,
+    checkRifaForDraw,
+    realizarSorteo
+} from "../controllers/rifa.controllers.js";
 import { requestPaymentIntent } from "../controllers/striper.controllers.js";
-import { createTicketController,getAllTickets } from "../controllers/ticket.controllers.js";
-
+import { 
+    createTicketController, 
+    getAllTickets, 
+    getTicketsByRifaIdController,
+    getTicketByIdController 
+} from "../controllers/ticket.controllers.js";
 
 
 const router = Router();
@@ -18,6 +31,11 @@ router.get("/get/rifa", getRifaById);
 router.patch("/update/rifa", updatePartialRifa);
 router.patch("/decrement/ticket", decrementRifaTicket);
 router.post("/create/ticket", createTicketController);
-router.post("/get/all/tickets", getAllTickets)
+router.post("/get/all/tickets", getAllTickets);
+router.post("/rifas/:rifaId/check-draw", checkRifaForDraw);
+router.post("/rifas/:rifaId/sorteo", realizarSorteo);
+router.get("/tickets/rifa/:rifaId", getTicketsByRifaIdController);
+router.post("/get/user", getUserByUidController);
+router.get("/tickets/:ticketId", getTicketByIdController);
 
 export default router;

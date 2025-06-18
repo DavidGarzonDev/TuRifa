@@ -95,3 +95,67 @@ export async function decrementRifaTickets(rifaId, amount){
     if (error) throw error;
     return { data, error };
 }
+
+// Nuevas funciones para el sorteo de rifas
+
+export async function updateRifaStatus(rifaId, status) {
+    const { data, error } = await supabase
+        .from('rifas')
+        .update({ state: status })
+        .eq('id', rifaId);
+    
+    if (error) throw error;
+    return { data, error };
+}
+
+export async function setRifaWinner(rifaId, userId, ticketId) {
+    const { data, error } = await supabase
+        .from('rifas')
+        .update({ 
+            winner_user_id: userId,
+            winner_ticket_id: ticketId,
+            draw_date: new Date().toISOString()
+        })
+        .eq('id', rifaId);
+    
+    if (error) throw error;
+    return { data, error };
+}
+
+// Verifica si una rifa está lista para sorteo
+export async function isRifaReadyForDraw(rifaId) {
+    const { data: rifa, error } = await supabase
+        .from('rifas')
+        .select('*')
+        .eq('id', rifaId)
+        .single();
+    
+    if (error) throw error;
+    
+    // Una rifa está lista si:
+    
+    // 2. No tiene ganador todavía
+    // 3. Tiene al menos un ticket vendido
+    const hasNoWinner = !rifa.winner_user_id;
+    const hasTicketsSold = rifa.total_tickets_sold > 0;
+    
+    return { 
+        isReady: hasNoWinner && hasTicketsSold,
+        rifa,
+        reason: !hasTicketsSold ? 'No hay tickets vendidos' : 
+                !hasNoWinner ? 'Esta rifa ya tiene un ganador' : null
+    };
+}
+
+// Exportamos también un objeto con todas las funciones para facilitar las importaciones
+export const rifaModel = {
+    createRifa,
+    getRifasUser,
+    getRifa,
+    updateRifa,
+    deleteRifa,
+    decrementRifaTickets,
+    updateRifaStatus,
+    setRifaWinner,
+    isRifaReadyForDraw
+};
