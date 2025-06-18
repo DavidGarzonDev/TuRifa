@@ -28,13 +28,13 @@ const AboutNew = () => {
     {
       name: 'Juan David Garzon',
       role: 'Full Stack Developer',
-      image: '',
-      bio: 'Es gay.',
+      image: 'https://avatars.githubusercontent.com/u/135771912?s=400&u=aa7b37e816d7d5fe284e39bfda2d8e94bc55e7a5&v=4',
+      bio: 'Soy programador junior fullstack. Me mueven las ideas que se pueden convertir en soluciones reales. Cada proyecto es una forma de entender mejor el mundo a través del código.',
       skills: ['UI/UX Design', 'React', 'Tailwind CSS', 'Figma', 'Animation', "Node.js"],
       social: {
-        github: 'https://github.com',
-        linkedin: 'https://linkedin.com',
-        email: 'alejandra@turifa.com'
+        github: 'https://github.com/DavidGarzonDev',
+        linkedin: 'https://www.linkedin.com/in/juan-david-garzon-montenegro-5b1bb136b/',
+        email: 'juanxavif@gmail.com'
       }
     }
   ];
