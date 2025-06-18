@@ -82,10 +82,6 @@ jobs:
         env:
           CI: true
 
-      - name: Build backend
-        run: npm run build
-        if: success()
-
       - name: Deploy to Render
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JorgeLNJunior/render-deploy@v1.4.4
