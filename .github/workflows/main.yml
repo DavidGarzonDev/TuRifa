@@ -27,7 +27,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install
 
       - name: Lint with ESLint
         run: npm run lint
@@ -65,7 +65,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install backend dependencies
-        run: npm ci
+        run: npm install
 
       - name: Lint with ESLint
         run: npm run lint
