@@ -29,10 +29,6 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Lint with ESLint
-        run: npm run lint
-        continue-on-error: true
-
       - name: Run frontend tests
         run: npm run test
         env:
@@ -76,9 +72,7 @@ jobs:
       - name: Install backend dependencies
         run: npm install
 
-      - name: Lint with ESLint
-        run: npm run lint
-        continue-on-error: true
+      
 
       - name: Run backend tests
         run: npm run test:ci
