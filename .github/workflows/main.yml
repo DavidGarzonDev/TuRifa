@@ -84,5 +84,5 @@ jobs:
         uses: JorgeLNJunior/render-deploy@v1.4.4
         with:
           service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
           clear-cache: false
