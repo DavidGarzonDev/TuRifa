@@ -11,4 +11,4 @@ jobs:
 
     steps:
       - name: pingsupa
-        run: curl -s https://backend-turifa.vercel.app/api/keepalive
+        run: curl -s https://backend-turifa.vercel.app/api/supabase
