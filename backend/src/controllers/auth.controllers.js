@@ -156,5 +156,32 @@ export const getUserByUidController = async (req, res) => {
 };
 
 
+//endpoint para mantener activo supabase
+export const dbactiva = async (req, res) => {
+
+  try {
+
+    const {data, error } = await supabase
+    .from('users')
+    .select('*')
+    .limit(1)
+    .maybeSingle()
+
+    if(error){
+      console.log("no vive")
+      return res.status(500).json({error : "error de consulta!"})
+      
+    }
+
+    console.log("vive")
+    return res.status(200).json()
+
+  } catch (error) {
+    console.log("noooo", error)
+    return res.status(500).json({error: 'Error de envio!'})
+  }
+}
+
+
 
 

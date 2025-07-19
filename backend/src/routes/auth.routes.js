@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, getUserByUidController } from "../controllers/auth.controllers.js";
+import { register, login, getUserByUidController, dbactiva} from "../controllers/auth.controllers.js";
 import { 
     getRifasUsers, 
     createRifas, 
@@ -8,7 +8,8 @@ import {
     updatePartialRifa, 
     decrementRifaTicket,
     checkRifaForDraw,
-    realizarSorteo
+    realizarSorteo,
+    
 } from "../controllers/rifa.controllers.js";
 import { requestPaymentIntent } from "../controllers/striper.controllers.js";
 import { 
@@ -37,5 +38,6 @@ router.post("/rifas/:rifaId/sorteo", realizarSorteo);
 router.get("/tickets/rifa/:rifaId", getTicketsByRifaIdController);
 router.post("/get/user", getUserByUidController);
 router.get("/tickets/:ticketId", getTicketByIdController);
+router.get("/supabase", dbactiva);
 
 export default router;
