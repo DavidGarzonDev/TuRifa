@@ -1,0 +1,14 @@
+name: supabase
+
+on:
+  schedule:
+    - cron: '0 12 */6 * *'
+  workflow_dispatch:
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: pingsupa
+        run: curl -s https://tu-backend.vercel.app/api/keepalive
