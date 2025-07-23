@@ -68,7 +68,3 @@ Juntos, creamos una solución que transforma rifas tradicionales en experiencias
 Explora rifas, crea la tuya, gana premios y sé parte de una comunidad que transforma la suerte en una experiencia digital segura.
 
 🔗 [Comienza ahora](https://tu-rifa-h6e6.vercel.app)
-
----
-
-© 2025 TuRifa. Todos los derechos reservados.
