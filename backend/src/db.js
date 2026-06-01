@@ -1,14 +1,14 @@
-import dotenv from 'dotenv'
+import 'dotenv/config'
+import { PrismaPg } from '@prisma/adapter-pg'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
 
-dotenv.config()
+const connectionString = process.env.DATABASE_URL
 
-import { createClient } from '@supabase/supabase-js'
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is not set')
+}
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY
+const adapter = new PrismaPg({ connectionString })
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
-
-
-
-
+export const prisma = new PrismaClient({ adapter })

@@ -1,6 +1,6 @@
 import { createUser, getUserByUid } from "../models/user.model.js";
+import { prisma } from "../db.js";
 import admin from "../firebase.js";
-import { supabase } from "../db.js";
 
 export const register = async (req, res) => {
   const { token } = req.body;
@@ -19,7 +19,7 @@ export const register = async (req, res) => {
       const { data } = await getUserByUid(uid);
       userFound = data;
     } catch (error) {
-      if (err.status !== 406) throw err;
+      if (error.status !== 404) throw error;
     }
     if (userFound) {
       return res.status(400).json({ error: "El usuario ya existe" });
@@ -53,25 +53,16 @@ export const login = async (req, res) => {
     let findError = null;
 
     try {
- 
-      const { data, error } = await supabase
-        .from("users")
-        .select("*") 
-        .eq("uid", uid)
-        .maybeSingle(); 
-
-      if (error) {
-      
-        throw error;
+      const { data, error } = await getUserByUid(uid);
+      if (error && error.status !== 404) {
+        throw error;  // Solo errores reales, no "user not found"
       }
       userInDb = data;
     } catch (err) {
-      console.error("Error al buscar el usuario durante login:", err);
-
       findError = err;
     }
 
-    if (findError) {
+    if (findError && findError.status !== 404) {
       return res
         .status(500)
         .json({ error: "Error interno al buscar el usuario." });
@@ -88,7 +79,8 @@ export const login = async (req, res) => {
 
         if (createError) {
           console.error("Error al crear usuario durante login:", createError);
-          if (createError.code === "23505") {
+          // P2002 = unique constraint violation (email duplicado)
+          if (createError.code === "P2002") {
             return res.status(409).json({
               error:
                 "Conflicto al crear usuario (posiblemente email duplicado).",
@@ -99,7 +91,7 @@ export const login = async (req, res) => {
           });
         }
 
-        userInDb = newUser?.[0];
+        userInDb = newUser;
         console.log("Usuario creado exitosamente durante login:", userInDb);
       } catch (creationErr) {
         console.error("Error inesperado en bloque de creación:", creationErr);
@@ -120,7 +112,7 @@ export const login = async (req, res) => {
 
     return res.status(200).json({
       message: "Usuario logeado con éxito",
-      userId: userInDb.id, // El ID de tu tabla de Supabase
+      userId: userInDb.uid,
       email: userInDb.email,
     });
 
@@ -155,33 +147,20 @@ export const getUserByUidController = async (req, res) => {
   }
 };
 
-
-//endpoint para mantener activo supabase
+// Endpoint para mantener activa la conexión a la BD
 export const dbactiva = async (req, res) => {
-
   try {
+    const data = await prisma.user.findFirst();
 
-    const {data, error } = await supabase
-    .from('users')
-    .select('*')
-    .limit(1)
-    .maybeSingle()
-
-    if(error){
-      console.log("no vive")
-      return res.status(500).json({error : "error de consulta!"})
-      
+    if (!data) {
+      console.log("no vive");
+      return res.status(500).json({ error: "error de consulta!" });
     }
 
-    console.log("vive")
-    return res.status(200).json()
-
+    console.log("vive");
+    return res.status(200).json();
   } catch (error) {
-    console.log("noooo", error)
-    return res.status(500).json({error: 'Error de envio!'})
+    console.log("noooo", error);
+    return res.status(500).json({ error: "Error de envio!" });
   }
-}
-
-
-
-
+};

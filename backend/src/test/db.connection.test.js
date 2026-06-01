@@ -1,60 +1,55 @@
 // @ts-nocheck
 /**
- * Test suite simplificado para la conexión con Supabase
+ * Test suite simplificado para la conexión con Prisma
  * Verifica el correcto funcionamiento básico de la conexión con la base de datos
  */
 
-// Mock para Supabase
-const mockSupabase = {
-  from: jest.fn().mockReturnThis(),
-  select: jest.fn().mockReturnThis(),
-  limit: jest.fn().mockReturnValue({
-    data: [{ id: 1 }],
-    error: null
-  })
+// Mock para Prisma
+const mockPrisma = {
+  user: {
+    findFirst: jest.fn()
+  }
 };
 
 // Mock los módulos necesarios
 jest.mock('../db.js', () => ({
-  supabase: mockSupabase
+  prisma: mockPrisma
 }));
 
-describe('Supabase Database Connection', () => {
-  
+describe('Prisma Database Connection', () => {
+
   beforeEach(() => {
-    // Reiniciar los mocks antes de cada prueba
     jest.clearAllMocks();
   });
-  
+
   /**
-   * Test para verificar la instancia de Supabase
+   * Test para verificar la instancia de Prisma
    */
-  test('debería tener una instancia de Supabase configurada', () => {
-    const { supabase } = require('../db.js');
-    expect(supabase).toBeDefined();
-    expect(typeof supabase.from).toBe('function');
+  test('debería tener una instancia de Prisma configurada', () => {
+    const { prisma } = require('../db.js');
+    expect(prisma).toBeDefined();
+    expect(typeof prisma.user.findFirst).toBe('function');
   });
-  
+
   /**
-   * Test para verificar manejo de errores simulados
+   * Test para verificar la consulta básica
    */
-  test('debería manejar errores en la conexión a la base de datos', () => {
-    const { supabase } = require('../db.js');
-    
-    // Modificar el mock para simular un error
-    mockSupabase.limit.mockReturnValueOnce({
-      data: null,
-      error: { message: 'Database connection error' }
-    });
-    
-    // Realizar una consulta que producirá un error
-    const result = supabase.from('users').select().limit();
-    
-    // Verificar que se llamaron los métodos correctos
-    expect(supabase.from).toHaveBeenCalledWith('users');
-    
-    // Verificar el resultado de error
-    expect(result.error).toBeDefined();
-    expect(result.error.message).toBe('Database connection error');
+  test('debería poder ejecutar findFirst en User', async () => {
+    const mockUser = { uid: 'test-uid', email: 'test@test.com', name: 'Test' };
+    mockPrisma.user.findFirst.mockResolvedValueOnce(mockUser);
+
+    const result = await mockPrisma.user.findFirst();
+
+    expect(mockPrisma.user.findFirst).toHaveBeenCalled();
+    expect(result).toEqual(mockUser);
+  });
+
+  /**
+   * Test para verificar manejo de errores
+   */
+  test('debería manejar errores en la conexión a la base de datos', async () => {
+    mockPrisma.user.findFirst.mockRejectedValueOnce(new Error('Database connection error'));
+
+    await expect(mockPrisma.user.findFirst()).rejects.toThrow('Database connection error');
   });
 });
