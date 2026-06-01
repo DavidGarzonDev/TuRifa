@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 /**
- * Mocks de dependencias
+ * Mocks de dependencias para auth.controllers con Prisma
  */
 const admin = {
   auth: jest.fn().mockReturnValue({
@@ -12,15 +12,14 @@ const userModel = {
   getUserByUid: jest.fn(),
   createUser: jest.fn()
 };
-const supabase = {
-  from: jest.fn().mockReturnThis(),
-  select: jest.fn().mockReturnThis(),
-  eq: jest.fn().mockReturnThis(),
-  maybeSingle: jest.fn()
+const prisma = {
+  user: {
+    findFirst: jest.fn()
+  }
 };
 
 /**
- * Reemplazar funciones inline por mocks:
+ * Register mock (replica la lógica del controller refactoreado)
  */
 const register = jest.fn(async (req, res) => {
   const { token } = req.body;
@@ -35,12 +34,15 @@ const register = jest.fn(async (req, res) => {
       return res.status(400).json({ error: 'El usuario ya existe' });
     }
   } catch (err) {
-    if (err.status !== 406) throw err;
+    if (err.status !== 404) throw err;
   }
   await userModel.createUser({ uid, name, email });
   return res.status(200).send('Usuario guardado exitosamente');
 });
 
+/**
+ * Login mock (replica la lógica del controller refactoreado con Prisma)
+ */
 const login = jest.fn(async (req, res) => {
   const { token } = req.body;
   if (!token) {
@@ -48,9 +50,11 @@ const login = jest.fn(async (req, res) => {
   }
   const decoded = await admin.auth().verifyIdToken(token);
   const { uid } = decoded;
-  let userInDb;
+  let userInDb = null;
+  let findError = null;
+
   try {
-    const { data, error } = await supabase.from('users').select('*').eq('uid', uid).maybeSingle();
+    const { data, error } = await userModel.getUserByUid(uid);
     if (error) {
       return res.status(500).json({ error: 'Error interno al buscar el usuario.' });
     }
@@ -58,10 +62,11 @@ const login = jest.fn(async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: 'Error interno al buscar el usuario.' });
   }
+
   if (!userInDb) {
     return res.status(404).json({ error: 'Usuario no encontrado' });
   }
-  return res.status(200).json({ message: 'Usuario logeado con éxito', userId: userInDb.id, email: userInDb.email });
+  return res.status(200).json({ message: 'Usuario logeado con éxito', userId: userInDb.uid, email: userInDb.email });
 });
 
 /**
@@ -80,8 +85,8 @@ describe('Firebase Authentication', () => {
     const mockUserData = { uid: 'user-123', email: 'u@e.com', name: 'Test' };
     req.body = { token: mockToken };
     admin.auth().verifyIdToken.mockResolvedValueOnce(mockUserData);
-    userModel.getUserByUid.mockRejectedValueOnce(Object.assign(new Error(), { status: 406 }));
-    userModel.createUser.mockResolvedValueOnce({ data: { id:1, ...mockUserData }, error: null });
+    userModel.getUserByUid.mockRejectedValueOnce(Object.assign(new Error(), { status: 404 }));
+    userModel.createUser.mockResolvedValueOnce({ data: { uid: mockUserData.uid, ...mockUserData }, error: null });
     await register(req, res);
     expect(admin.auth().verifyIdToken).toHaveBeenCalledWith(mockToken);
     expect(userModel.getUserByUid).toHaveBeenCalledWith(mockUserData.uid);
@@ -100,10 +105,10 @@ describe('Firebase Authentication', () => {
   });
 
   test('debería rechazar el registro de un usuario que ya existe', async () => {
-    const mockToken = 't'; const mockUserData={uid:'u',email:'e',name:'n'};
-    req.body={token:mockToken};
+    const mockToken = 't'; const mockUserData = { uid: 'u', email: 'e', name: 'n' };
+    req.body = { token: mockToken };
     admin.auth().verifyIdToken.mockResolvedValueOnce(mockUserData);
-    userModel.getUserByUid.mockResolvedValueOnce({ data: { id:1, ...mockUserData } });
+    userModel.getUserByUid.mockResolvedValueOnce({ data: { uid: mockUserData.uid, ...mockUserData }, error: null });
     await register(req, res);
     expect(admin.auth().verifyIdToken).toHaveBeenCalledWith(mockToken);
     expect(userModel.createUser).not.toHaveBeenCalled();
@@ -112,17 +117,15 @@ describe('Firebase Authentication', () => {
   });
 
   test('debería permitir el login de un usuario existente', async () => {
-    const mockToken='t'; const mockUserData={uid:'u',email:'e',name:'n'};
-    const mockUserInDb={ id:1, ...mockUserData };
-    req.body={token:mockToken};
+    const mockToken = 't'; const mockUserData = { uid: 'u', email: 'e', name: 'n' };
+    const mockUserInDb = { uid: mockUserData.uid, ...mockUserData };
+    req.body = { token: mockToken };
     admin.auth().verifyIdToken.mockResolvedValueOnce(mockUserData);
-    supabase.from.mockReturnThis(); supabase.select.mockReturnThis(); supabase.eq.mockReturnThis();
-    supabase.maybeSingle.mockResolvedValueOnce({ data: mockUserInDb, error: null });
+    userModel.getUserByUid.mockResolvedValueOnce({ data: mockUserInDb, error: null });
     await login(req, res);
     expect(admin.auth().verifyIdToken).toHaveBeenCalledWith(mockToken);
-    expect(supabase.from).toHaveBeenCalledWith('users');
-    expect(supabase.eq).toHaveBeenCalledWith('uid', mockUserData.uid);
+    expect(userModel.getUserByUid).toHaveBeenCalledWith(mockUserData.uid);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Usuario logeado con éxito', userId: mockUserInDb.id, email: mockUserInDb.email });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Usuario logeado con éxito', userId: mockUserInDb.uid, email: mockUserInDb.email });
   });
 });

@@ -1,0 +1,84 @@
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Modelo User — usuarios de la app (creados desde Firebase UID)
+model User {
+  uid    String @id // Firebase UID
+  name   String?
+  email  String  @unique
+
+  rifas  Rifa[]  // Rifas creadas por este usuario
+  tickets Ticket[] // Tickets comprados por este usuario
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modelo Rifa — rifas/loterías
+model Rifa {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String?
+  totalTickets Int    @default(0)       // total_tickets en Supabase
+  prize     String?
+  startDate DateTime @default(now())    // start_date en Supabase
+  endDate   DateTime?                    // end_date en Supabase
+  userID    String                      // Firebase UID del creador
+  ticketPrice Float   @default(0)       // ticket_price en Supabase
+  organizer String?                     // nombre del organizador
+
+  // Contadores
+  totalTicketsSold Int     @default(0)  // total_tickets_sold en Supabase
+  revenue          Float   @default(0)  // revenue en Supabase
+
+  // Estado y sorteo
+  state            String? @default("Activa") // Activa, Cerrada, etc.
+  winnerUserId     String?                 // Firebase UID del ganador
+  winnerTicketId   Int?                    // ID del ticket ganador
+  drawDate         DateTime?               // draw_date en Supabase
+
+  tickets Ticket[]  // Tickets vendidos de esta rifa
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación con creador
+  creator User @relation(fields: [userID], references: [uid], onDelete: Cascade)
+
+  @@index([userID])
+  @@index([state])
+}
+
+// Modelo Ticket — tickets vendidos
+model Ticket {
+  id         Int      @id @default(autoincrement())
+  idRifa     Int                         // id_rifa en Supabase
+  idUser     String                      // Firebase UID del comprador
+  buyDate    DateTime @default(now())    // buy_date en Supabase
+  expireDate DateTime?                   // expire_date en Supabase
+  state      String   @default("Activo") // Activo, Expirado, etc.
+  idPago     String?                    // id_pago en Supabase
+  price      Float                       // price en Supabase
+  methodPago String?                     // method_pago en Supabase
+
+  // Generado desde el ID si no existe
+  numeroBoleto String?                   // numero_boleto en Supabase
+
+  // Relaciones
+  rifa   Rifa  @relation(fields: [idRifa], references: [id], onDelete: Cascade)
+  buyer  User  @relation(fields: [idUser], references: [uid], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([idRifa])
+  @@index([idUser])
+  @@index([state])
+}

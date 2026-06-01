@@ -4,8 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "dev": "prisma generate && nodemon src/index.js",
+    "start": "prisma generate && node src/index.js",
+    "postinstall": "prisma generate",
     "test": "jest --watchAll",
     "test:ci": "jest"
   },
@@ -14,7 +15,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -23,16 +25,19 @@
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
     "node-cron": "^4.2.1",
+    "pg": "^8.21.0",
     "stripe": "^18.2.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
+    "@types/pg": "^8.20.0",
     "babel-jest": "^30.0.0",
     "jest": "^30.0.0",
     "jest-circus": "^29.7.0",
     "nodemon": "^3.1.9",
+    "prisma": "^7.8.0",
     "supertest": "^7.1.1"
   }
 }

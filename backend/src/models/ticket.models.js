@@ -1,79 +1,85 @@
-import { supabase } from "../db.js";
+import { prisma } from "../db.js";
 
+export async function createTicket(ticket) {
+  try {
+    const data = await prisma.ticket.create({
+      data: {
+        idRifa: ticket.rifaId,
+        idUser: ticket.userId,
+        buyDate: ticket.buyDate,
+        expireDate: ticket.expireDate,
+        state: ticket.status,
+        idPago: ticket.idPago,
+        price: ticket.price,
+        methodPago: ticket.methodPago,
+      },
+    });
 
-export async function createTicket(ticket){
-   
-    const { data, error } = await supabase
-    .from('tickets')
-    .insert([
-        {
-            id_rifa: ticket.rifaId,
-            id_user: ticket.userId,
-            buy_date: ticket.buyDate,
-            expire_date : ticket.expireDate,
-            state: ticket.status,
-            id_pago: ticket.idPago,
-            price: ticket.price,
-            method_pago: ticket.methodPago,
-            
-            
-        }
-    ]);
+    // Generar numero_boleto desde el ID si no existe
+    const numeroBoleto = `#${String(data.id).padStart(4, "0")}`;
 
-    return { data, error };
+    return { data: { ...data, numeroBoleto }, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
-
 export async function getTicketsByRifaId(rifaId) {
-  
-    const { data, error } = await supabase
-    .from('tickets')
-    .select("*")
-    .eq('id_rifa', rifaId);
-    
-    if (error) throw error;
-
-    const processedData = data.map(ticket => {
-        if (!ticket.numero_boleto) {
-            ticket.numero_boleto = `#${String(ticket.id).padStart(4, '0')}`;
-        }
-        return ticket;
+  try {
+    const data = await prisma.ticket.findMany({
+      where: { idRifa: parseInt(rifaId) },
     });
-    
-    return processedData; // Retornamos los datos procesados
+
+    // Procesar número de boleto si no existe
+    const processedData = data.map((ticket) => {
+      if (!ticket.numeroBoleto) {
+        ticket.numeroBoleto = `#${String(ticket.id).padStart(4, "0")}`;
+      }
+      return ticket;
+    });
+
+    return { data: processedData, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
 export async function getAllTicketsModel(userId) {
-    const { data, error } = await supabase
-    .from('tickets')
-    .select('*')
-    .eq('id_user', userId);
-
-    if (error) throw error;
-    return { data, error };
+  try {
+    const data = await prisma.ticket.findMany({
+      where: { idUser: userId },
+    });
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
 export async function getTicketById(ticketId) {
-    const { data, error } = await supabase
-    .from('tickets')
-    .select('*')
-    .eq('id', ticketId)
-    .single();
-    
-    if (error) throw error;
-    
-    // Procesamos el número de boleto si no existe
-    if (data && !data.numero_boleto) {
-        data.numero_boleto = `#${String(data.id).padStart(4, '0')}`;
+  try {
+    const data = await prisma.ticket.findUnique({
+      where: { id: parseInt(ticketId) },
+    });
+
+    if (!data) {
+      throw Object.assign(new Error("Ticket not found"), { status: 404 });
     }
-    
-    return { data, error };
+
+    // Procesar número de boleto si no existe
+    if (data && !data.numeroBoleto) {
+      data.numeroBoleto = `#${String(data.id).padStart(4, "0")}`;
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
 // Exportamos las funciones en un objeto
 export const ticketModel = {
-    createTicket,
-    getTicketsByRifaId,
-    getAllTicketsModel,
-    getTicketById
+  createTicket,
+  getTicketsByRifaId,
+  getAllTicketsModel,
+  getTicketById,
 };
