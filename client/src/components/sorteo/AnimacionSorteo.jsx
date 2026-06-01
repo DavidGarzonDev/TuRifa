@@ -54,7 +54,6 @@ const AnimacionSorteo = ({ rifaInfo, onComplete, onCancel }) => {
           setTicketNumbers(randomTickets);
         }
       } catch (err) {
-        console.error('Error al cargar tickets:', err);
         setError('Error al cargar los tickets');
         // Fallback a números aleatorios
         const totalNumbers = 30;

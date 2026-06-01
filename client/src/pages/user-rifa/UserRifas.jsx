@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaTicketAlt, FaEdit, FaTrashAlt, FaEye, FaPlus, FaUsers, FaCalendarAlt, FaCoins, 
          FaFilter, FaGift, FaChartLine, FaArrowUp, FaStar, FaTrophy, FaExclamationCircle } from 'react-icons/fa';
-import useAuthStore from '../../store/auth-store/use-auth-store';
+import useAuthStore from '@storage/auth-store/use-auth-store';
 import { getRifas } from '../../api/rifa.js';
 import ViewWinUser from './components/ViewWinUser.jsx';
 
@@ -21,7 +21,6 @@ const UserRifas = () => {
         const { data } = await getRifas(token);
         setRifas(data.rifas);
       } catch (err) {
-        console.error('Error cargando rifas:', err);
       } finally {
         setIsLoading(false);
       }

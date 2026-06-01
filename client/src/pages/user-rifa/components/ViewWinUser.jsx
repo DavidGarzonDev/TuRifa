@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTrophy, FaUser, FaTicketAlt, FaEnvelope } from 'react-icons/fa';
 import { getRifaById } from '../../../api/rifa.js';
 import axios from 'axios';
-import useAuthStore from '../../../store/auth-store/use-auth-store';
+import useAuthStore from '@storage/auth-store/use-auth-store';
 
 const ViewWinUser = ({ rifaId }) => {
   const [winnerInfo, setWinnerInfo] = useState(null);
@@ -26,7 +26,6 @@ const ViewWinUser = ({ rifaId }) => {
         const rifa = rifaResponse.rifa;
         
         if (!rifa || !rifa.winner_user_id || !rifa.winner_ticket_id) {
-          console.error("No hay información del ganador en esta rifa");
           if (isMounted) {
             setError('No hay información del ganador disponible');
             setLoading(false);
@@ -47,7 +46,6 @@ const ViewWinUser = ({ rifaId }) => {
             winnerTicket = ticketResponse.data.ticket;
           }
         } catch (ticketError) {
-          console.error("Error al obtener ticket:", ticketError);
         }
         
         // Intentar obtener información del usuario
@@ -63,7 +61,6 @@ const ViewWinUser = ({ rifaId }) => {
             }
           }
         } catch (userError) {
-          console.error("Error al obtener usuario:", userError);
         }
         
         // Actualizar estado solo si el componente sigue montado
@@ -81,7 +78,6 @@ const ViewWinUser = ({ rifaId }) => {
         }
         
       } catch (error) {
-        console.error("Error principal:", error);
         if (isMounted) {
           setError('Error al cargar información del ganador');
           setLoading(false);

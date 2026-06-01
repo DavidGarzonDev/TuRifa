@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaTrophy, FaArrowLeft, FaExclamationCircle, FaInfoCircle } from 'react-icons/fa';
-import useAuthStore from '../../store/auth-store/use-auth-store';
+import useAuthStore from '@storage/auth-store/use-auth-store';
 import { getRifaById, checkRifaForDraw, realizarSorteo } from '../../api/rifa';
 import AnimacionSorteo from '../../components/sorteo/AnimacionSorteo.jsx';
 import ResultadoSorteo from '../../components/sorteo/ResultadoSorteo.jsx';
@@ -39,7 +39,6 @@ const SorteoRifa = () => {
         setReason(checkResponse.data.reason);
 
       } catch (err) {
-        console.error('Error cargando rifa para sorteo:', err);
         setError('No se pudo cargar la información de la rifa. Por favor, inténtalo de nuevo.');
       } finally {
         setLoading(false);
@@ -68,7 +67,6 @@ const SorteoRifa = () => {
         setStage('check');
       }
     } catch (err) {
-      console.error('Error al realizar sorteo:', err);
       setError('Ocurrió un error al realizar el sorteo. Por favor, inténtalo de nuevo.');
       setStage('check');
     }

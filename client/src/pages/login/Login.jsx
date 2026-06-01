@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LoginComponent from "../../components/login/LoginComponent";
 import RegisterComponent from "../../components/register/RegisterComponent";
 import LoginWhitGoogleComponent from "../../components/loginwhitgoogle/LoginWhitGoogleComponent";
-import useAuthStore from "../../store/auth-store/use-auth-store";
+import useAuthStore from "@storage/auth-store/use-auth-store";
 import { useNavigate } from "react-router";
 
 const Login = () => {

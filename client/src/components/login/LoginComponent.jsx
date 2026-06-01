@@ -8,7 +8,7 @@ const LoginComponent = () => {
   } = useForm();
 
   const onSumit = (data) => {
-    console.log(data);
+    // Login con email/password - por implementar con backend si es necesario
   };
 
   return (

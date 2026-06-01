@@ -1,19 +1,18 @@
 import { useState } from 'react'
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { decrementRifaTicket } from '../../../api/rifa'
-import useAuthStore from '../../../store/auth-store/use-auth-store'
+import useAuthStore from '@storage/auth-store/use-auth-store'
 import { createTicket } from '../../../api/ticket'
 
 async function UpdateRifa(rifaid, amount) {
     try {
      const response = await decrementRifaTicket(rifaid, amount);
-     if (response.status === 200) {
-        console.log("Boleto decrementado con éxito");
-        return { success: true, data: response.data };
-     }
+if (response.status === 200) {
+         return { success: true, data: response.data };
+      }
      return { success: false, error: "Error desconocido" };
     } catch (error) {
-        console.error("Error al decrementar el boleto:", error);
+        
         return { success: false, error: error.message };
     }
 }
@@ -41,11 +40,9 @@ async function CreateTicket(rifaId, userId, price, methodPago, idPago = null) {
         if (response.status === 201 || response.status === 200) {
             return { success: true, data: response.data };
         } else {
-            console.error("Error al crear el ticket:", response);
             return { success: false, error: "Error al crear el ticket" };
         }
     } catch (error) {
-        console.error("Error en la creación del ticket:", error);
         return { success: false, error: error.message };
     }
 }

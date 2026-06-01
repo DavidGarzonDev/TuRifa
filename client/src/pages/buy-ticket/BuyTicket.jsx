@@ -34,7 +34,6 @@ const BuyTicket = () => {
       setClientSecret(secret)
       setShowPaymentForm(true)
     } catch (error) {
-      console.error('Error preparando el pago:', error)
       setError('No se pudo preparar el pago. Inténtalo de nuevo.')
     } finally {
       setLoading(false)
@@ -54,7 +53,6 @@ const BuyTicket = () => {
         setRifaDetails(dataRifa.data.rifa)
 
       } catch (error) {
-        console.error('Error cargando detalles de la rifa:', error)
       }
     }
     

@@ -1,7 +1,7 @@
 import React from "react";
 import { FaCoins, FaTicketAlt, FaCalendarAlt, FaDollarSign, FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import  useAuthStore from "../../../store/auth-store/use-auth-store.js"
+import useAuthStore from "@storage/auth-store/use-auth-store"
 
 const CardRifa = ({ rifa, icon }) => {
   const navigate = useNavigate();
