@@ -1,67 +1,23 @@
 import { NavLink } from "react-router-dom";
-import useAuthStore from "../../store/auth-store/use-auth-store";
-import { useNavigate } from "react-router-dom";
-import { useCallback, useState, useEffect, useRef } from "react";
+import useAuthStore from "@storage/auth-store/use-auth-store";
 import { FaBars, FaTimes, FaUser, FaTicketAlt, FaHome, FaSignOutAlt, FaInfoCircle, FaChevronDown } from "react-icons/fa";
 import logo from "../../assets/icon-turifa.svg";
 import { IoTicket } from "react-icons/io5";
+import useHeaderState from "@hooks/useHeaderState";
 
 const Header = () => {
-  const { useLooged, logout } = useAuthStore();
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [hoveredMenu, setHoveredMenu] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Referencias para controlar el hover
-  const menuTimeoutRef = useRef(null);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    handleResize(); // Comprobar el tamaño inicial
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(menuTimeoutRef.current);
-    };
-  }, []);
-  
-  const handleMenuEnter = (menu) => {
-    clearTimeout(menuTimeoutRef.current);
-    setHoveredMenu(menu);
-  };
-  
-  const handleMenuLeave = () => {
-    menuTimeoutRef.current = setTimeout(() => {
-      setHoveredMenu(null);
-    }, 200); // Pequeño retraso para una mejor experiencia de usuario
-  };
-
-  const haldleLogin = useCallback(() => {
-    logout()
-      .then(() => navigate("/login"))
-      .catch((error) => {
-        console.error("No se pudo cerrar sesión", error);
-      });
-  }, [logout, navigate]);
-  
-  // Función para manejar clics en móvil
-  const toggleMobileMenu = (menu) => {
-    if (isMobile) {
-      setHoveredMenu(hoveredMenu === menu ? null : menu);
-    }
-  };
+  const { useLooged } = useAuthStore();
+  const {
+    menuOpen,
+    scrolled,
+    hoveredMenu,
+    isMobile,
+    setMenuOpen,
+    handleMenuEnter,
+    handleMenuLeave,
+    toggleMobileMenu,
+    handleLogin,
+  } = useHeaderState();
   
   return (
     <header 
@@ -323,7 +279,7 @@ const Header = () => {
               <button
                 type="button"
                 title="Cerrar sesión"
-                onClick={haldleLogin}
+                onClick={handleLogin}
                 className="flex items-center gap-2 font-medium px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
               >
                 <FaSignOutAlt className="text-lg" />
@@ -494,7 +450,7 @@ const Header = () => {
                 type="button"
                 title="Cerrar sesión"
                 onClick={() => {
-                  haldleLogin();
+                  handleLogin();
                   setMenuOpen(false);
                 }}
                 className="flex items-center gap-2 w-full font-medium px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md transition-all duration-300"

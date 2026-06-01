@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { getAllTicketsUser } from '../../api/ticket';
-import useAuthStore from '../../store/auth-store/use-auth-store';
+import useAuthStore from '@storage/auth-store/use-auth-store';
 import Ticket from './components/Ticket';
 import { FaTicketAlt, FaSpinner } from 'react-icons/fa';
 
@@ -28,7 +28,6 @@ const SeeTicketsUser = () => {
         setTickets(data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching tickets:', error);
         setError('No pudimos cargar tus tickets. Por favor intenta más tarde.');
         setLoading(false);
       }

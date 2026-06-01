@@ -13,7 +13,6 @@ const Ticket = ({ ticket }) => {
         setRifa(response.data.rifa);
         setLoading(false);
       } catch (error) {
-        console.error('Error al cargar detalles de la rifa:', error);
         setLoading(false);
       }
     };

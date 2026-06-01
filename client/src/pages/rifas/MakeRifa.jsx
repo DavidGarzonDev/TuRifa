@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import useAuthStore from '../../store/auth-store/use-auth-store';
+import useAuthStore from '@storage/auth-store/use-auth-store';
 import { useNavigate } from 'react-router-dom';
 import { FaTicketAlt, FaGift, FaCoins, FaCalendarAlt, FaClock, FaInfoCircle, FaArrowLeft, FaTrophy } from 'react-icons/fa';
 import { createRifa } from '../../api/rifa.js'
@@ -46,7 +46,6 @@ const MakeRifa = () => {
     try {
       const response = await createRifa(data);
       if (response.error) {
-        console.error('Error al crear la rifa:', response.error);
         alert('Ocurrió un error al crear la rifa. Intenta nuevamente.');
       }
       else {
@@ -55,7 +54,6 @@ const MakeRifa = () => {
       }
 
     } catch (error) {
-      console.error('Error al crear la rifa:', error);
       alert('Ocurrió un error al crear la rifa. Intenta nuevamente.');
     } finally {
       setIsSubmitting(false);

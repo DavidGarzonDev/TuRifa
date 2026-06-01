@@ -1,0 +1,91 @@
+upstream backend {
+    server ${BACKEND_UPSTREAM};
+    keepalive 16;
+}
+
+upstream frontend {
+    server ${FRONTEND_UPSTREAM};
+    keepalive 16;
+}
+
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=30r/s;
+limit_req_zone $binary_remote_addr zone=general_limit:10m rate=50r/s;
+
+server {
+    listen ${PORT};
+    server_name ${SERVER_NAME};
+
+    client_max_body_size 2m;
+
+    # Block sensitive files
+    location ~ /\.(?!well-known) {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    location ~* \.(env|log|sql|bak|swp|sh|php)$ {
+        deny all;
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header Cross-Origin-Opener-Policy "same-origin-allow-popups" always;
+    add_header Cross-Origin-Resource-Policy "same-origin" always;
+
+    # CSP - Firebase + Google Auth + API mismo origen
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://www.gstatic.com https://firebase.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+
+    # Proxy timeouts
+    proxy_connect_timeout 30s;
+    proxy_send_timeout 60s;
+    proxy_read_timeout 60s;
+
+    # ===========================================
+    # API → /api/
+    # ===========================================
+    location /api/ {
+        limit_req zone=api_limit burst=60 nodelay;
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect http:// https://;
+    }
+
+    # ===========================================
+    # FRONTEND → /
+    # ===========================================
+    location / {
+        limit_req zone=general_limit burst=30 nodelay;
+        proxy_pass http://frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        error_page 404 =200 /index.html;
+    }
+
+    # ===========================================
+    # HEALTH CHECK
+    # ===========================================
+    location /health {
+        access_log off;
+        return 200 "OK\n";
+        add_header Content-Type text/plain;
+    }
+}

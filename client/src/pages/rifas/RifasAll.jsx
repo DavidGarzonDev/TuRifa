@@ -1,13 +1,16 @@
 import { useEffect } from 'react'
-import { getAllRifas } from '../../api/rifa';
+import { getAllRifas } from '@api/rifa';
 import { useState } from 'react';
-import  CardRifa  from '../../pages/inicio/components/CardRifa.jsx';
+import { useNavigate } from 'react-router';
+import { FaTicketAlt } from 'react-icons/fa';
+import CardRifa from '@components/ui/CardRifa.jsx';
 
 
 const RifasAll = () => {
     const [rifas, setRifas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchRifas = async () => {
@@ -16,7 +19,7 @@ const RifasAll = () => {
                 const response = await getAllRifas();
                 setRifas(response.data.rifas || []);
             } catch (err) {
-                console.error("Error al obtener rifas:", err);
+                
                 setError("No se pudieron cargar las rifas. Intenta de nuevo más tarde.");
             } finally {
                 setLoading(false);
@@ -65,7 +68,9 @@ const RifasAll = () => {
                             <h4 className="text-xl font-semibold text-gray-700 mb-2">No hay rifas disponibles</h4>
                             <p className="text-gray-500">Actualmente no hay rifas disponibles en la plataforma.</p>
                             <p className="mt-2 text-gray-500">¡Vuelve pronto para ver nuevas rifas o crea la tuya!</p>
-                            <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                            <button 
+                                onClick={() => navigate('/crear/rifa')}
+                                className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
                                 Crear una rifa
                             </button>
                         </div>

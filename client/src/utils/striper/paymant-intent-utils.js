@@ -12,12 +12,11 @@ export const paymentIntent = async (cartTotal, rifaId) => {
             throw new Error("Failed to create payment intent");
         }
 
-        console.log("Respuesta recibida:", response.data);
         const { client_secret : clientSecret } = response.data;
         return clientSecret;
 
     } catch (error) {
-        console.error("Error creating payment intent:", error);
+        // Error en payment intent se lanza para manejo en el componente llamador
         throw error;
     }
 }

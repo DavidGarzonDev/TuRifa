@@ -1,5 +1,5 @@
 import React from "react";
-import useAuthStore from "../../store/auth-store/use-auth-store";
+import useAuthStore from "@storage/auth-store/use-auth-store";
 import { useNavigate } from "react-router";
 import { useCallback, useState } from "react";
 
@@ -11,11 +11,9 @@ const LoginWhitGoogleComponent = () => {
   const haldleLogin = useCallback(async () => {
     setErrorMessage(null);
     try {
-      const res = await loginGoogleWithPopup();
-      console.log(res);
+      await loginGoogleWithPopup();
       navigate("/");
     } catch (error) {
-      console.log(error);
       setErrorMessage(error.message || "No se encontró al usuario");
       navigate("/login");
     }
